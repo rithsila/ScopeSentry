@@ -311,7 +311,6 @@ func fetchPocTemplates(offset, limit int) ([]templateResult, error) {
 	req.Header.Set("sec-fetch-mode", "cors")
 	req.Header.Set("sec-fetch-site", "same-site")
 	req.Header.Set("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36")
-	req.Header.Set("x-team-id", "cus16bdim6vs73cqnh0g")
 
 	// 创建 HTTP 客户端并发送请求
 	client := &http.Client{

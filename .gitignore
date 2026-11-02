@@ -5,8 +5,10 @@ config.yaml
 file/
 PLUGINKEY
 dist/
+uploads/
 .uploads/
 frontend/node_modules/
 frontend/dist-pro/
 .cursor/mcp.json
 .cursor/
+.serena/

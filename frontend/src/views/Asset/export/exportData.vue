@@ -145,7 +145,7 @@ const download = async (id) => {
     a.click()
     window.URL.revokeObjectURL(url)
   } catch (err) {
-    console.error('下载失败:', err)
+    console.error('Download failed:', err)
   }
 }
 const createLoading = ref(false)

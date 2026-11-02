@@ -312,7 +312,7 @@ const confirmRunPluginOnce = async (hash: string) => {
         await runPluginOnceApi(hash)
         ElMessage.success(t('plugin.runOnceSuccess'))
       } catch (error) {
-        console.error('运行插件失败:', error)
+        console.error('Failed to run plugin:', error)
         ElMessage.error(t('plugin.runOnceFailed'))
       }
     })

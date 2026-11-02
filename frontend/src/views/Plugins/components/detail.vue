@@ -57,7 +57,7 @@ const form = ref({
 })
 
 const resetForm = () => {
-  console.log('清空')
+  console.log('Clear')
   form.value = {
     name: '',
     version: '',
@@ -112,7 +112,7 @@ const loadDictList = async () => {
       dictList.value = res.data.list
     }
   } catch (error) {
-    console.error('加载字典列表失败:', error)
+    console.error('Failed to load dictionary list:', error)
   }
 }
 
@@ -124,7 +124,7 @@ const loadPortList = async () => {
       portList.value = res.data.list
     }
   } catch (error) {
-    console.error('加载端口列表失败:', error)
+    console.error('Failed to load port list:', error)
   }
 }
 
@@ -251,23 +251,23 @@ const fetchData = async (id: string) => {
         try {
           form.value.parameterList = JSON.parse(data.parameterList) as ParameterItem[]
         } catch (error) {
-          console.error('解析 parameterList 失败:', error)
+          console.error('Failed to parse parameterList:', error)
           form.value.parameterList = []
         }
       } else {
         form.value.parameterList = []
       }
     } else {
-      ElMessage.error(`数据加载失败：${res.message}`)
+      ElMessage.error(`Failed to load data: ${res.message}`)
     }
   } catch (error) {
-    console.error('查询数据时发生错误:', error)
+    console.error('Error querying data:', error)
   }
 }
 
 const saveLoading = ref(false)
 
-// 监听 id 的变化，如果 id 变化则重新获取数据
+// Watch id change
 watch(
   () => props.id,
   async (newId) => {
@@ -279,26 +279,26 @@ watch(
   }
 )
 const save = async () => {
-  saveLoading.value = true // 开始加载状态
+  saveLoading.value = true
   if (form.value.name == '') {
-    ElMessage.error('name 不能为空')
-    saveLoading.value = false // 结束加载状态
+    ElMessage.error('Name cannot be empty')
+    saveLoading.value = false
     return
   }
   if (form.value.module == '' && props.tp == 'scan') {
-    ElMessage.error('module 不能为空')
-    saveLoading.value = false // 结束加载状态
+    ElMessage.error('Module cannot be empty')
+    saveLoading.value = false
     return
   }
   if (!isSystem.value) {
     if (content.value == '') {
-      ElMessage.error('源码 不能为空')
-      saveLoading.value = false // 结束加载状态
+      ElMessage.error('Source code cannot be empty')
+      saveLoading.value = false
       return
     }
   }
   try {
-    // 将 parameterList 序列化为 JSON 字符串
+    // Serialize parameterList to JSON string
     const parameterListStr = JSON.stringify(form.value.parameterList)
     const res = await savePluginDataApi(
       props.id,
@@ -320,10 +320,10 @@ const save = async () => {
     props.closeDialog()
     props.getList()
   } catch (error) {
-    console.error('保存数据时发生错误:', error)
-    ElMessage.error('保存失败，请稍后再试。')
+    console.error('Error saving data:', error)
+    ElMessage.error('Failed to save, please try again later.')
   } finally {
-    saveLoading.value = false // 结束加载状态
+    saveLoading.value = false
   }
 }
 </script>

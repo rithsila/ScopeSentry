@@ -21,10 +21,10 @@ const prop = defineProps({
     height: 'height'
   }),
   cols: propTypes.number.def(undefined),
-  loadingText: propTypes.string.def('加载中...'),
+  loadingText: propTypes.string.def('Loading...'),
   loading: propTypes.bool.def(false),
   end: propTypes.bool.def(false),
-  endText: propTypes.string.def('没有更多了'),
+  endText: propTypes.string.def('No more items'),
   autoCenter: propTypes.bool.def(true),
   layout: propTypes.oneOf(['javascript', 'flex']).def('flex')
 })

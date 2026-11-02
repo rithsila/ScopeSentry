@@ -7,8 +7,8 @@ import { ref, watch } from 'vue'
 const { t } = useI18n()
 
 const defaultData = ref({
-  title: '标题',
-  content: '内容'
+  title: 'Title',
+  content: 'Content'
 })
 
 watch(
@@ -23,8 +23,8 @@ watch(
 
 setTimeout(() => {
   defaultData.value = {
-    title: '异步标题',
-    content: '异步内容'
+    title: 'Async Title',
+    content: 'Async Content'
   }
 }, 4000)
 </script>

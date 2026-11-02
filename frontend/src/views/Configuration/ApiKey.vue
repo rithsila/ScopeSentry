@@ -29,7 +29,7 @@ const mcpConfigExample = `{
     "scopesentry": {
       "url": "http://your-host:8082/mcp",
       "headers": {
-        "X-API-Key": "ssk_你的密钥"
+        "X-API-Key": "ssk_your_api_key"
       }
     }
   }

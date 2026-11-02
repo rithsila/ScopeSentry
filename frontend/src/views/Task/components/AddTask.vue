@@ -235,7 +235,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       }
     }
   } catch (error) {
-    console.error('提交表单时发生错误:', error)
+    console.error('Error submitting form:', error)
   } finally {
     saveLoading.value = false // 确保无论成功或失败都重置加载状态
   }

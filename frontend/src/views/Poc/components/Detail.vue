@@ -98,7 +98,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       }
     })
   } catch (error) {
-    console.error('提交失败:', error)
+    console.error('Submit failed:', error)
   } finally {
     saveLoading.value = false
   }

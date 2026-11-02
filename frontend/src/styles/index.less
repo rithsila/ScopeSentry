@@ -1,7 +1,111 @@
 @import './var.css';
 @import 'element-plus/theme-chalk/dark/css-vars.css';
 
-// 解决抽屉弹出时，body宽度变化的问题
+// Universal typography and base layout
+* {
+  font-family: 'JetBrains Mono', 'Inter', monospace !important;
+}
+
+body,
+html,
+#app {
+  background-color: #050c05 !important;
+  color: #d4d4d4 !important;
+  font-family: 'JetBrains Mono', 'Inter', monospace !important;
+}
+
+// Sharp geometry & borders
+.el-card,
+.el-button,
+.el-input__wrapper,
+.el-dialog,
+.el-message-box,
+.el-drawer {
+  border-radius: 3px !important;
+}
+
+.el-card {
+  background-color: #0a140a !important;
+  border: 1px solid #1b3d1b !important;
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.08) !important;
+}
+
+.el-tag,
+.el-badge,
+.el-badge__content {
+  border-radius: 2px !important;
+}
+
+// Dialog styling
+.el-dialog {
+  background-color: #0a140a !important;
+  border: 1px solid #1b3d1b !important;
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.25) !important;
+}
+
+.el-dialog__title {
+  color: #00ff41 !important;
+}
+
+// Table styling
+.el-table {
+  --el-table-bg-color: #0a140a !important;
+  --el-table-tr-bg-color: #0a140a !important;
+  --el-table-header-bg-color: #0e1b0e !important;
+  --el-table-border-color: #1b3d1b !important;
+  --el-table-text-color: #d4d4d4 !important;
+  --el-table-header-text-color: #00ff41 !important;
+  --el-table-row-hover-bg-color: #0e1b0e !important;
+  background-color: #0a140a !important;
+  border-color: #1b3d1b !important;
+}
+
+// Input wrappers
+.el-input__wrapper,
+.el-textarea__inner,
+.el-select__wrapper {
+  background-color: #0e1b0e !important;
+  box-shadow: 0 0 0 1px #1b3d1b inset !important;
+  color: #d4d4d4 !important;
+}
+
+.el-input__wrapper.is-focus,
+.el-textarea__inner:focus {
+  box-shadow: 0 0 0 1px #00ff41 inset, 0 0 6px rgba(0, 255, 65, 0.35) !important;
+}
+
+// Buttons
+.el-button--primary {
+  background-color: #00ff41 !important;
+  border-color: #00ff41 !important;
+  color: #050c05 !important;
+  font-weight: 600;
+}
+
+.el-button--primary:hover,
+.el-button--primary:focus {
+  background-color: #33ff67 !important;
+  border-color: #33ff67 !important;
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.45) !important;
+}
+
+// Scrollbars
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #1b3d1b;
+}
+::-webkit-scrollbar-thumb {
+  background: #00ff41;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00e5ff;
+}
+
+// Fix drawer body width issue
 .el-popup-parent--hidden {
   width: 100% !important;
 }

@@ -273,8 +273,8 @@ const uploadHeaders = ref({ Authorization: `${userStore.getToken}` })
 
 const upload = ref<UploadInstance>()
 const uploadSuccess = async () => {
-  console.log('导入中')
-  ElMessage.success('导入中')
+  console.log('Importing...')
+  ElMessage.success('Importing...')
 }
 
 const handleExceed: UploadProps['onExceed'] = (files) => {

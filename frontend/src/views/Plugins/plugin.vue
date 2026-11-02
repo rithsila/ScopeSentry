@@ -57,12 +57,12 @@ const loadRemotePlugins = async () => {
         let isSystem = false
         if (plugin.tags) {
           const tags = plugin.tags.split(',').map((tag: string) => tag.trim())
-          isSystem = tags.includes('内置')
+          isSystem = tags.includes('内置') || tags.includes('Built-in') || tags.includes('System')
         }
 
         return {
           id: plugin.id,
-          name: plugin.name?.trim() || plugin.hash || `插件-${plugin.id}`,
+          name: plugin.name?.trim() || plugin.hash || `Plugin-${plugin.id}`,
           module: plugin.module || '',
           priceStatus: plugin.priceStatus,
           price: plugin.price,
@@ -74,7 +74,7 @@ const loadRemotePlugins = async () => {
           isInstalled,
           needUpdate,
           isSystem,
-          type: plugin.type || 'scan' // 空字符串视为 'scan'
+          type: plugin.type || 'scan' // Empty string defaults to 'scan'
         }
       })
     }
@@ -82,19 +82,19 @@ const loadRemotePlugins = async () => {
     remotePluginList.value = remotePlugins
   } catch (error) {
     console.error('Error loading plugins:', error)
-    ElMessage.error('获取插件列表失败')
+    ElMessage.error('Failed to get plugin list')
   } finally {
     marketLoading.value = false
   }
 }
 
-// 处理插件安装
+// Handle plugin installation
 const handleInstallPlugin = async (plugin: RemotePluginData, token?: string) => {
   try {
     const action =
       plugin.isInstalled && plugin.needUpdate ? t('plugin.update') : t('plugin.install')
 
-    let pluginName = '未知插件'
+    let pluginName = 'Unknown Plugin'
     if (plugin && plugin.name) {
       const trimmedName = String(plugin.name).trim()
       if (trimmedName) {
@@ -102,7 +102,7 @@ const handleInstallPlugin = async (plugin: RemotePluginData, token?: string) => 
       }
     }
 
-    // 如果是收费插件且没有 token，不需要确认（已经在子组件中处理了 token 输入）
+    // Free plugin confirmation
     if (plugin.priceStatus === 0) {
       const confirmMessage = t('plugin.confirmInstall', {
         action,
@@ -117,7 +117,7 @@ const handleInstallPlugin = async (plugin: RemotePluginData, token?: string) => 
     }
 
     const loadingMessage = ElMessage({
-      message: `${action}中...`,
+      message: `${action}...`,
       type: 'info',
       duration: 0,
       showClose: false
@@ -128,7 +128,7 @@ const handleInstallPlugin = async (plugin: RemotePluginData, token?: string) => 
 
       if (exportRes.status !== '200' || !exportRes.data) {
         loadingMessage.close()
-        ElMessage.error(exportRes.message || '获取插件数据失败')
+        ElMessage.error(exportRes.message || 'Failed to get plugin data')
         return
       }
 

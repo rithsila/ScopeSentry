@@ -430,9 +430,9 @@ const confirmSyncToProjectSelect = async () => {
       ])
   }).then(async () => {
     if (option.value === 'existing') {
-      console.log('同步到已有项目ID:', selectedProjectId.value)
+      console.log('Sync to existing project ID:', selectedProjectId.value)
     } else {
-      console.log('创建新项目:', newProjectName.value, newProjectTag.value)
+      console.log('Create new project:', newProjectName.value, newProjectTag.value)
     }
     const elTableExpose = await getElTableExpose()
     const selectedRows = elTableExpose?.getSelectionRows() || []

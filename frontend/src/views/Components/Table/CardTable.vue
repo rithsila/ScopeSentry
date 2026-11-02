@@ -67,11 +67,11 @@ const actionClick = (row?: any) => {
       <template #content-footer="item">
         <div class="flex justify-center items-center">
           <div class="flex-1 text-center" @click="() => actionClick(item)">
-            <ElLink :underline="false">操作一</ElLink>
+            <ElLink :underline="false">Action 1</ElLink>
           </div>
           <ElDivider direction="vertical" />
           <div class="flex-1 text-center" @click="() => actionClick(item)">
-            <ElLink :underline="false">操作二</ElLink>
+            <ElLink :underline="false">Action 2</ElLink>
           </div>
         </div>
       </template>

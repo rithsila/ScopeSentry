@@ -9,6 +9,8 @@ uploads/
 .uploads/
 frontend/node_modules/
 frontend/dist-pro/
+ScopeSentry
+ScopeSentry-linux
 .cursor/mcp.json
 .cursor/
 .serena/

@@ -203,7 +203,7 @@ const querySearch = (queryString, cb) => {
     assignmen.value = false
   }
   if (keyword.value) {
-    console.log('第一')
+    console.log('stage 1')
     if (logic.value) {
       queryString = queryString.replace(selectedKeyword.value, '').trim()
     }
@@ -214,14 +214,14 @@ const querySearch = (queryString, cb) => {
     return
   }
   if (assignmen.value) {
-    console.log('第2')
+    console.log('stage 2')
     const searchStr = queryString.replace(selectedKeyword.value, '').trim()
     const results = AssignmentHelp.filter((item) => item.operator.includes(searchStr))
     cb(results)
     return
   }
   if (logic.value && queryString.endsWith(' ')) {
-    console.log('第3')
+    console.log('stage 3')
     const searchStr = queryString.replace(searchParams.value, '').trim()
     const results = logicHelp.filter((item) => item.operator.includes(searchStr))
     cb(results)

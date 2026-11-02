@@ -98,7 +98,7 @@ const loadDictList = async () => {
       dictList.value = res.data.list
     }
   } catch (error) {
-    console.error('加载字典列表失败:', error)
+    console.error('Failed to load dictionary list:', error)
   }
 }
 
@@ -110,7 +110,7 @@ const loadPortList = async () => {
       portList.value = res.data.list
     }
   } catch (error) {
-    console.error('加载端口列表失败:', error)
+    console.error('Failed to load port list:', error)
   }
 }
 
@@ -256,7 +256,7 @@ const initPlugins = async () => {
         try {
           paramList = JSON.parse(plugin.parameterList) as ParameterItem[]
         } catch (error) {
-          console.error('解析 parameterList 失败:', error)
+          console.error('Failed to parse parameterList:', error)
           // 如果解析失败，尝试从 parameter 字符串解析
           paramList = parseParameters(plugin.parameter || '')
         }
@@ -309,7 +309,7 @@ const loadTemplate = async (id: string) => {
           try {
             paramList = JSON.parse(savedParameterList) as ParameterItem[]
           } catch (error) {
-            console.error('解析保存的 parameterList 失败:', error)
+            console.error('Failed to parse saved parameterList:', error)
             // 解析失败，尝试从保存的参数字符串解析
             if (savedParameterString && typeof savedParameterString === 'string') {
               paramList = parseParameters(savedParameterString)
@@ -359,20 +359,20 @@ const loadTemplate = async (id: string) => {
               return pluginParam
             })
           } catch (error) {
-            console.error('解析插件 parameterList 失败:', error)
-            // 解析失败，直接使用从参数字符串解析的结果
+            console.error('Failed to parse plugin parameterList:', error)
+            // If failed, directly use parsed params from string
             paramList = parsedParams
           }
         } else {
-          // 插件没有 parameterList，直接使用解析结果
+          // Plugin has no parameterList, use parsed result directly
           paramList = parsedParams
         }
       } else if (plugin.parameterList) {
-        // 没有保存的参数，使用插件的默认 parameterList
+        // No saved parameters, use plugin's default parameterList
         try {
           paramList = JSON.parse(plugin.parameterList) as ParameterItem[]
         } catch (error) {
-          console.error('解析插件 parameterList 失败:', error)
+          console.error('Failed to parse plugin parameterList:', error)
           paramList = []
         }
       } else {
@@ -414,7 +414,7 @@ const onSubmit = async () => {
   saveLoading.value = true
   const result: Record<string, any> = {}
   if (templateName.value == '') {
-    ElMessage.error('name 不能为空')
+    ElMessage.error('Name cannot be empty')
     saveLoading.value = false
     return
   }
@@ -590,10 +590,10 @@ watch(dialogVisible, (newVal) => {
     nextTick(() => {
       const tree = treeRef.value
       if (tree) {
-        console.log('treeRef 已经获取到实例:', tree)
+        console.log('treeRef instance acquired:', tree)
         setTreeCheckedNodes(vulList.value) // 初始化选中的节点
       } else {
-        console.log('treeRef 未能正确获取到实例')
+        console.log('treeRef failed to acquire instance')
       }
     })
   }
@@ -605,7 +605,7 @@ const setTreeCheckedNodes = (checkedKeys) => {
     if (tree) {
       tree.setCheckedKeys(checkedKeys) // 使用 setCheckedKeys 方法来批量选中指定的节点
     } else {
-      console.log('treeRef 未能正确获取到实例')
+      console.log('treeRef failed to acquire instance')
     }
   })
 }
@@ -659,8 +659,8 @@ const handleCheckChange = (data, checked) => {
     addLeafNodes(data)
   }
 
-  // 打印当前选中的叶子节点的值
-  console.log('当前选中的叶子节点的值:', vulList.value)
+  // Print currently selected leaf node values
+  console.log('Current selected leaf node values:', vulList.value)
 }
 </script>
 
@@ -776,7 +776,7 @@ const handleCheckChange = (data, checked) => {
     </div>
     <ElRow>
       <ElCol :span="12" style="text-align: right">
-        <ElButton type="primary" @click="onSubmit" :loading="saveLoading"> 保存 </ElButton>
+        <ElButton type="primary" @click="onSubmit" :loading="saveLoading"> {{ t('task.save') || 'Save' }} </ElButton>
       </ElCol>
     </ElRow>
   </ElForm>

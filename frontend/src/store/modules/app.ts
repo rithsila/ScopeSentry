@@ -51,7 +51,7 @@ export const useAppStore = defineStore('app', {
       hamburger: true, // 折叠图标
       screenfull: true, // 全屏图标
       size: true, // 尺寸图标
-      locale: true, // 多语言图标
+      locale: false, // 多语言图标
       tagsView: true, // 标签页
       tagsViewIcon: false, // 是否显示标签图标
       logo: true, // logo
@@ -62,38 +62,38 @@ export const useAppStore = defineStore('app', {
       serverDynamicRouter: false, // 是否服务端渲染动态路由
       fixedMenu: false, // 是否固定菜单
 
-      layout: 'classic', // layout布局
-      isDark: false, // 是否是暗黑模式
-      currentSize: 'default', // 组件尺寸
+      layout: 'classic', // layout layout
+      isDark: true, // Default to dark mode
+      currentSize: 'default', // Component size
       theme: {
-        // 主题色
-        elColorPrimary: '#409eff',
-        // 左侧菜单边框颜色
-        leftMenuBorderColor: 'inherit',
-        // 左侧菜单背景颜色
-        leftMenuBgColor: '#fff',
-        // 左侧菜单浅色背景颜色
-        leftMenuBgLightColor: '#0f2438',
-        // 左侧菜单选中背景颜色
-        leftMenuBgActiveColor: 'var(--el-color-primary)',
-        // 左侧菜单收起选中背景颜色
-        leftMenuCollapseBgActiveColor: 'var(--el-color-primary)',
-        // 左侧菜单字体颜色
-        leftMenuTextColor: '#bfcbd9',
-        // 左侧菜单选中字体颜色
-        leftMenuTextActiveColor: '#fff',
-        // logo字体颜色
-        logoTitleTextColor: '#fff',
-        // logo边框颜色
-        logoBorderColor: 'inherit',
-        // 头部背景颜色
-        topHeaderBgColor: '#fff',
-        // 头部字体颜色
-        topHeaderTextColor: 'inherit',
-        // 头部悬停颜色
-        topHeaderHoverColor: '#f6f6f6',
-        // 头部边框颜色
-        topToolBorderColor: '#eee'
+        // Theme color
+        elColorPrimary: '#00ff41',
+        // Left menu border color
+        leftMenuBorderColor: '#1b3d1b',
+        // Left menu background color
+        leftMenuBgColor: '#0a140a',
+        // Left menu light background color
+        leftMenuBgLightColor: '#0e1b0e',
+        // Left menu active background color
+        leftMenuBgActiveColor: '#1b3d1b',
+        // Left menu collapse active background color
+        leftMenuCollapseBgActiveColor: '#1b3d1b',
+        // Left menu text color
+        leftMenuTextColor: '#8a9e8a',
+        // Left menu active text color
+        leftMenuTextActiveColor: '#00ff41',
+        // Logo title text color
+        logoTitleTextColor: '#00ff41',
+        // Logo border color
+        logoBorderColor: '#1b3d1b',
+        // Top header background color
+        topHeaderBgColor: '#0a140a',
+        // Top header text color
+        topHeaderTextColor: '#d4d4d4',
+        // Top header hover color
+        topHeaderHoverColor: '#0e1b0e',
+        // Top tool border color
+        topToolBorderColor: '#1b3d1b'
       }
     }
   },

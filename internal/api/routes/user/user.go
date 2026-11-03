@@ -26,38 +26,6 @@ func RegisterUserRoutes(api *gin.RouterGroup) {
 				Handler:     user.ChangePassword,
 				Middlewares: common.WithAuth(),
 			},
-			//{
-			//	Method:  "POST",
-			//	Path:    "/register",
-			//	Handler: user.Register,
-			//},
-			//// 需要认证和user:read权限的路由
-			//{
-			//	Method:      "GET",
-			//	Path:        "",
-			//	Handler:     user.List,
-			//	Middlewares: common.WithAuthAndPermission(constants.PermissionUserRead),
-			//},
-			//{
-			//	Method:      "GET",
-			//	Path:        "/:id",
-			//	Handler:     user.Get,
-			//	Middlewares: common.WithAuthAndPermission(constants.PermissionUserRead),
-			//},
-			//// 需要认证和user:update权限的路由
-			//{
-			//	Method:      "PUT",
-			//	Path:        "/:id",
-			//	Handler:     user.Update,
-			//	Middlewares: common.WithAuthAndPermission(constants.PermissionUserUpdate),
-			//},
-			//// 需要认证和user:delete权限的路由
-			//{
-			//	Method:      "DELETE",
-			//	Path:        "/:id",
-			//	Handler:     user.Delete,
-			//	Middlewares: common.WithAuthAndPermission(constants.PermissionUserDelete),
-			//},
 		},
 	}
 

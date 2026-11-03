@@ -52,27 +52,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git tag -a "${{ steps.version.outputs.tag }}" -m "Release ${{ steps.version.outputs.tag }}"
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Build frontend to dist-pro
-        working-directory: frontend
-        env:
-          HUSKY: "0"
-        run: |
-          npm ci
-          npx vite build --mode pro
-          test -d dist-pro || (echo "frontend/dist-pro not found after build" >&2 && exit 1)
-
-      - name: Overlay frontend into cmd/main/static
-        run: |
-          # 将 dist-pro 产物覆盖合并到 static，保留 static 中 draco/lib/plugins 等其他模块
-          rsync -a frontend/dist-pro/ cmd/main/static/
-
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
@@ -83,7 +62,6 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           version: "~> v2"
-          # CI 会将新构建的前端覆盖进 static，跳过 dirty 校验
           args: release --clean --skip=validate
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

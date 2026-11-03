@@ -3,10 +3,12 @@ package mongodb
 import (
 	"context"
 	"fmt"
-	"go.mongodb.org/mongo-driver/bson"
 	"net/url"
+	"os"
 	"strconv"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/Autumn-27/ScopeSentry/internal/logger"
 
@@ -17,38 +19,70 @@ import (
 
 var Client *mongo.Client
 var DB *mongo.Database
+var IsConnected bool
+
+func isOfflineSubcommand() bool {
+	if len(os.Args) < 2 {
+		return false
+	}
+	switch os.Args[1] {
+	case "version", "--version", "-v", "pluginkey", "help", "--help", "-h":
+		return true
+	}
+	return false
+}
 
 func init() {
-	// 设置连接超时
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
 	username := url.QueryEscape(config.GlobalConfig.MongoDB.Username)
 	password := url.QueryEscape(config.GlobalConfig.MongoDB.Password)
 
-	uri := config.GlobalConfig.MongoDB.IP + ":" + strconv.Itoa(config.GlobalConfig.MongoDB.Port)
+	ip := config.GlobalConfig.MongoDB.IP
+	if ip == "" {
+		ip = "127.0.0.1"
+	}
+	port := config.GlobalConfig.MongoDB.Port
+	if port == 0 {
+		port = 27017
+	}
+	uri := ip + ":" + strconv.Itoa(port)
 	if username != "" && password != "" {
 		uri = "mongodb://" + username + ":" + password + "@" + uri
+	} else {
+		uri = "mongodb://" + uri
 	}
 
 	// 设置客户端选项
 	clientOptions := options.Client().ApplyURI(uri)
 
-	// 连接到 MongoDB
-	client, err := mongo.Connect(ctx, clientOptions)
+	// 连接到 MongoDB（纯本地客户端结构体初始化，不发网络包）
+	client, err := mongo.Connect(context.Background(), clientOptions)
+	if err == nil && client != nil {
+		Client = client
+		dbName := config.GlobalConfig.MongoDB.Database
+		if dbName == "" {
+			dbName = "ScopeSentry"
+		}
+		DB = client.Database(dbName)
+	}
 	if err != nil {
 		logger.Error(fmt.Sprintf("failed to connect %v to MongoDB: %v", uri, err))
 		return
 	}
 
-	// 检查连接
+	// 如果是离线子命令，跳过 ping 网络探测，不阻塞也不输出报警日志
+	if isOfflineSubcommand() {
+		return
+	}
+
+	// 设置连接超时并检查连接
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
 	if err = client.Ping(ctx, nil); err != nil {
 		logger.Error(fmt.Sprintf("failed to ping MongoDB: %v", err))
 		return
 	}
 
-	Client = client
-	DB = client.Database(config.GlobalConfig.MongoDB.Database)
-
+	IsConnected = true
 	logger.Info("MongoDB connected successfully")
 	return
 }

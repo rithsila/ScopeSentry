@@ -1,211 +1,172 @@
 # ScopeSentry AI Agent Guide
 
-A quick operational reference for AI agents to understand, query, and automate ScopeSentry.
+An operational guide for AI agents to automate and query ScopeSentry through MCP or the standalone Go CLI.
 
 ---
 
-## 1. What is ScopeSentry?
+## 1. Headless Architecture Overview
 
-ScopeSentry is a distributed attack surface management and vulnerability scanning platform.
+ScopeSentry is a headless, agent-first attack surface management and security scanning platform.
 
-- **Master Server**: Go (Gin) backend that manages projects, tasks, schedules, and the web interface.
-- **Scanning Nodes**: Python/Go worker daemons that pull scan jobs from a Redis queue and execute security tools (Subfinder, httpx, naabu, nuclei, custom plugins).
-- **Storage**:
-  - **MongoDB**: Stores projects, tasks, scan templates, assets, and vulnerabilities.
-  - **Redis**: Handles job queuing, distributed locks, and live log pub/sub.
+- **Master Server**: Go 1.24 + Gin headless service. Exposes MCP (`/mcp`), REST API, Swagger (`/api/swagger/*any`), and image storage (`/images`).
+- **CLI Client**: Standalone binary `scopesentry` (`cmd/scopesentry`) communicating over `/mcp` with zero backend dependencies. Stdout is pure JSON.
+- **Scanning Nodes**: Python/Go worker daemons running scanners (subfinder, httpx, naabu, nuclei, custom plugins) synchronized via Redis and MongoDB.
+- **Data Stores**:
+  - **MongoDB**: Projects, tasks, scan templates, assets, and vulnerabilities.
+  - **Redis**: Task queue, distributed locks, and real-time log publishing.
 
 ---
 
-## 2. How to Connect
+## 2. Authentication & Setup
 
-### Option A: Model Context Protocol (MCP) — Recommended
+### Creating an API Key Headlessly
+No browser or UI is needed. From the server terminal or container:
 
-If your client supports MCP (Cursor, Claude Desktop, OpenCode):
+```bash
+./ScopeSentry apikey create --name "agent-key"
+```
+
+Output:
+```json
+{
+  "name": "agent-key",
+  "key": "ssk_xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "createdAt": "2026-11-03T15:00:00Z"
+}
+```
+
+### Option A: Direct CLI Client (`scopesentry`)
+For agents with shell/command execution access:
+
+```bash
+export SCOPESENTRY_URL="http://127.0.0.1:8082"
+export SCOPESENTRY_API_KEY="ssk_xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# Verify health
+scopesentry doctor
+```
+
+### Option B: MCP Server Connection
+For agents running directly against the MCP protocol (Cursor, Claude Desktop, OpenCode):
 
 - **MCP Endpoint**: `http://<HOST>:8082/mcp`
-- **Authentication**: HTTP Header `X-API-Key: ssk_...` or `Authorization: Bearer ssk_...`
+- **Headers**: `X-API-Key: ssk_...` or `Authorization: Bearer ssk_...`
 
-Configuration snippet:
 ```json
 {
   "mcpServers": {
     "scopesentry": {
-      "url": "http://10.10.23.6:8082/mcp",
+      "url": "http://127.0.0.1:8082/mcp",
       "headers": {
-        "X-API-Key": "ssk_YOUR_API_KEY"
+        "X-API-Key": "ssk_xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
       }
     }
   }
 }
 ```
 
-### Option B: REST API
+---
 
-- **Base URL**: `http://<HOST>:8082/api`
-- **Header**: `X-API-Key: ssk_...`
+## 3. CLI Quick Reference for Agents
 
-Key endpoints:
-- `POST /api/project/data` — List projects (paginated)
-- `POST /api/project/create` — Create project
-- `POST /api/task/list` — List tasks
-- `POST /api/task/add` — Create scan task
-- `POST /api/assets/<asset_type>` — Query assets
-- `POST /api/assets/common/total` — Count assets
+All `scopesentry` commands write machine-readable JSON to `stdout` and logs/diagnostics to `stderr`.
+
+```bash
+# Projects
+scopesentry project list
+scopesentry project list --by-tag
+scopesentry project get <project-id>
+scopesentry project create --name "Company A" --target "example.com\n1.2.3.0/24"
+
+# Tasks
+scopesentry task list --search "Recon"
+scopesentry task get <task-id>
+scopesentry task create --name "Initial Scan" --node "node-1" --target "example.com" --template "<template-id>"
+scopesentry task wait <task-id> --timeout 15m --interval 5s
+
+# Assets
+scopesentry asset list --type subdomain --search 'subdomain.domain="example.com"'
+scopesentry asset count --type asset
+scopesentry asset get --type vulnerability <vuln-hash>
+scopesentry asset add-tag --type asset --id <asset-id> --tag "Production"
+
+# Templates & Plugins
+scopesentry template list
+scopesentry plugin modules
+scopesentry plugin list --module SubdomainScan
+
+# Direct MCP tool execution
+scopesentry tools list
+scopesentry tools describe create_scan_task
+scopesentry tools call create_scan_task --input '{"name":"api-scan","node":["node-1"]}'
+```
 
 ---
 
-## 3. Core Concepts
-
-### Projects
-A project groups targets (root domains, subdomains, IPs, CIDRs) under one container.
-- **Target format**: Multiline string or comma-separated list (`example.com`, `192.168.1.0/24`).
-- **Identifier**: MongoDB ObjectID (e.g. `67262c5b9f71c40f8a846b10`). Always use this ID in filters, not the project name.
-
-### Scan Templates
-Templates define which plugins execute and in what order.
-- **Pipeline Modules**: `TargetHandler` -> `SubdomainScan` -> `SubdomainSecurity` -> `PortScanPreparation` -> `PortScan` -> `PortFingerprint` -> `AssetMapping` -> `AssetHandle` -> `URLScan` -> `WebCrawler` -> `URLSecurity` -> `DirScan` -> `VulnerabilityScan` -> `PassiveScan`.
-- **Plugins**: Modular scripts identified by their MD5 hash.
-
-### Scan Tasks
-A task runs a Scan Template against targets on one or more Nodes.
-- **Status lifecycle**: `Waiting` -> `Running` -> `Complete` / `Error`.
-
----
-
-## 4. MCP Tools Catalog
+## 4. MCP Tools Catalog (All 17 Tools)
 
 | Tool Name | What It Does | Key Arguments |
 |---|---|---|
 | `list_projects` | List projects grouped by tag | None |
 | `list_projects_data` | Search projects with pagination | `search`, `pageIndex`, `pageSize` |
 | `get_project` | Get project details | `id` (Project ObjectID) |
-| `create_project` | Create or update target scope | `name`, `target`, `tag`, `template` |
-| `list_tasks` | List scan tasks | `pageIndex`, `pageSize` |
-| `get_task` | Get task status and progress | `id` (Task ObjectID) |
-| `list_scan_templates` | List scan templates | `pageIndex`, `pageSize` |
+| `create_project` | Create project or replace scope on duplicate name | `name`, `target`, `tag`, `template`, `node` |
+| `list_tasks` | List scan tasks | `search`, `pageIndex`, `pageSize` |
+| `get_task` | Get task status, progress, and node execution stats | `id` (Task ObjectID) |
+| `create_scan_task` | Launch or schedule a scan task | `name`, `node`, `template`, `targetSource` |
+| `list_scan_templates` | List scan templates | `query`, `pageIndex`, `pageSize` |
 | `get_scan_template` | Get scan template details | `id` (Template ObjectID) |
-| `list_plugin_modules` | List all pipeline module names | None |
-| `list_plugins` | List scanning plugins & hashes | `module` (optional filter) |
-| `create_scan_template`| Build a custom scan template | `name`, `modules`, `parameters` |
-| `create_scan_task` | Launch a scan task | `name`, `node`, `template`, `targetSource` |
-| `list_assets` | Query discovered assets | `asset_type`, `search`, `filter`, `pageIndex` |
+| `create_scan_template`| Build custom scan pipeline from plugin hashes | `name`, `modules`, `parameters`, `vullist` |
+| `list_plugin_modules` | List all pipeline module names in run order | None |
+| `list_plugins` | List scanning plugins & parameter defaults | `module` (optional filter), `search` |
+| `list_assets` | Query discovered assets with DSL search & filtering | `asset_type`, `search`, `filter`, `pageIndex`, `pageSize` |
 | `count_assets` | Count total matching assets | `asset_type`, `search`, `filter` |
-| `get_asset_detail` | Get full asset or bug record | `id`, `asset_type` |
+| `get_asset_detail` | Get full asset record or vulnerability finding | `id`, `asset_type` (asset or vulnerability) |
+| `add_asset_tag` | Add custom tag to an asset | `asset_type`, `id`, `tag` |
 | `list_nodes` | List worker nodes & status | `online_only` (boolean) |
 
 ---
 
-## 5. Asset Types & Search Syntax
+## 5. Asset Types & Search DSL
 
-### Available Asset Types
-- `asset`: HTTP web applications and open ports.
-- `subdomain`: Discovered subdomains.
+### Asset Types
+- `asset`: HTTP web applications, technologies, and ports.
+- `subdomain`: Discovered subdomains and DNS records.
 - `RootDomain`: Monitored root domains.
-- `vulnerability`: Detected vulnerabilities (Nuclei, custom POCs).
-- `UrlScan`: Extracted URLs and endpoints.
+- `vulnerability`: Detected vulnerabilities and Nuclei findings.
+- `UrlScan`: Extracted URLs, endpoints, and paths.
 - `SensitiveResult`: Leaked keys, tokens, or credentials.
 - `DirScanResult`: Discovered directories and backup files.
 - `PageMonitoring`: Website change detection diffs.
+- `IPAsset`: Resolved IPs, ports, and banners.
+- `SubdomainTakerResult`: Subdomain takeover vulnerabilities.
 
-### Search DSL Rules (`search` string)
-- `field=value`: Fuzzy contains match (case-insensitive).
+### Search DSL Rules
+- `field="value"`: Case-insensitive substring match.
 - `field=="exact"`: Exact match.
-- `field!="value"`: Exclude value.
+- `field!="value"`: Negated match.
 - `expr1 && expr2`: Logical AND.
 - `expr1 || expr2`: Logical OR.
 
-### Example Search Queries
+### Examples:
 ```text
-domain=example.com && port==443
-statuscode==200 && title="Admin"
-service=nginx && (port==80 || port==8080)
-level==critical || level==high
+asset.host="api.example.com" && asset.code==200
+subdomain.domain="example.com"
+vulnerability.level=="critical" || vulnerability.level=="high"
+url.url="login" && url.status_code==200
 ```
 
-### Filter Rules (`filter` object)
-Use the `filter` JSON parameter for exact indexed lookups.
-- `project`: Always an array of Project ObjectIDs: `{"project": ["67262c5b..."]}`.
-- `level`: Vulnerability severity: `{"level": ["critical", "high"]}`.
-- `port`: Port numbers: `{"port": ["443", "8443"]}`.
-
 ---
 
-## 6. Standard Agent Workflows
+## 6. Important Agent Rules & Gotchas
 
-### Workflow 1: Create a Project and Run a Scan
-
-1. Call `list_nodes({ online_only: true })` to verify at least one node is online.
-2. Call `list_scan_templates()` to select an existing template ObjectID.
-3. Call `create_project()`:
-   ```json
-   {
-     "name": "Target Company",
-     "target": "example.com\n1.2.3.4/24",
-     "tag": "External"
-   }
-   ```
-4. Call `create_scan_task()` to start scanning:
-   ```json
-   {
-     "name": "Target Company - Initial Recon",
-     "node": ["node-1"],
-     "template": "<TEMPLATE_OBJECT_ID>",
-     "targetSource": "project",
-     "project": ["<PROJECT_OBJECT_ID>"]
-   }
-   ```
-
-### Workflow 2: Triaging Vulnerabilities
-
-1. Get the total count:
-   ```json
-   {
-     "asset_type": "vulnerability",
-     "filter": {
-       "level": ["critical", "high"]
-     }
-   }
-   ```
-2. Retrieve the vulnerability list:
-   ```json
-   {
-     "asset_type": "vulnerability",
-     "filter": {
-       "level": ["critical", "high"]
-     },
-     "pageIndex": 1,
-     "pageSize": 20
-   }
-   ```
-3. Inspect details with `get_asset_detail({ id: "<VULN_ID>", asset_type: "vulnerability" })`.
-
-### Workflow 3: Export Discovered Web Services
-
-1. Query active web services for a project:
-   ```json
-   {
-     "asset_type": "asset",
-     "filter": {
-       "project": ["<PROJECT_OBJECT_ID>"],
-       "statuscode": ["200", "301", "302"]
-     },
-     "pageIndex": 1,
-     "pageSize": 50
-   }
-   ```
-2. Extract URLs and titles from results for further inspection.
-
----
-
-## 7. Important Agent Rules & Gotchas
-
-1. **Project ID vs Project Name**:
-   - `filter.project` **must** be a MongoDB ObjectID (24 hex characters). Do not pass the project name.
-2. **Task Name vs Task ID**:
-   - `filter.task` accepts the task **name** string, not its ObjectID.
-3. **Template ID**:
-   - `create_scan_task` requires the template's **ObjectID** in the `template` parameter.
-4. **Always Check Nodes**:
-   - Before launching a task, check `list_nodes({ online_only: true })`. Tasks assigned to offline nodes stay in `Waiting` state indefinitely.
+1. **Project Scope Replacement on Duplicate Name**:
+   When `create_project` is called with an existing project name and a valid `target`, ScopeSentry does not return an error; it replaces the target scope of the existing project and preserves the project ObjectID. The response contains `"replaced": true`.
+2. **Project IDs in Filters**:
+   When filtering assets or tasks by project, always use the MongoDB ObjectID (24 hex characters), not the project name.
+3. **Task Completion Detection**:
+   Tasks finish when `status == 3` or `progress >= 100`. Use `scopesentry task wait <task-id>` for automatic polling with timeout safeguards.
+4. **Always Check Nodes First**:
+   Always verify active nodes with `list_nodes({ online_only: true })` before creating a task. Tasks assigned to offline nodes will stall in `Waiting` state.
 5. **Count Before Paging**:
-   - Use `count_assets` before looping through `list_assets` to know the total record count in advance.
+   Call `count_assets` before paginating through large asset lists with `list_assets`.

@@ -1,6 +1,4 @@
-<div align=center>
-	<img src="docs/images/favicon.ico"/>
-</div>
+# ScopeSentry (Headless & Agent-First)
 
 English | [中文](./README_CN.md)
 
@@ -17,12 +15,18 @@ Server Recommendation: [lightnode](https://www.lightnode.com/?inviteCode=CQ11JU&
 
 [https://discord.gg/GWVwSBBm48](https://discord.gg/GWVwSBBm48)
 
-## Language
-Server：python - FastApi
+## Architecture
+- **Server**: Go (Gin) Headless Server with native Model Context Protocol (MCP) server & REST API
+- **CLI Client**: Standalone Go CLI client (`scopesentry`)
+- **Scan Node**: Go distributed scanning workers (`ScopeSentry-Scan`)
+- **Databases**: MongoDB & Redis
 
-Scan：go
-
-Front-end：vue - vue-element-plus-admin
+## Agent & Automation Support
+ScopeSentry is designed for AI agents and automated attack surface workflows:
+- **Built-in MCP Server**: Exposes all 17 security scanning and asset management tools at `/mcp`.
+- **Standalone CLI**: `scopesentry` connects to `/mcp` with pure machine-readable JSON stdout.
+- **Headless Admin**: Generate API keys without a browser via `./ScopeSentry apikey create --name <name>`.
+- **Guides**: See [AI_AGENT_GUIDE.md](./AI_AGENT_GUIDE.md) and [SKILL.md](./SKILL.md).
 
 ## Website
 
@@ -91,85 +95,38 @@ Discord:
 [https://discord.gg/agsYdAyN](https://discord.gg/agsYdAyN)
 
 
-## Screenshots
+## Headless CLI & MCP Usage
 
-### Login
+ScopeSentry operates as a headless scanner server with Model Context Protocol (MCP) and a dedicated CLI.
 
-![alt text](docs/images/login.png)
+### Health Check & Diagnostics
+```bash
+scopesentry doctor
+```
 
-### Homepage Dashboard
-![alt text](docs/images/index-en.png)
+### Headless Admin Credentials
+```bash
+# Create an admin API key
+./ScopeSentry apikey create --name admin
 
-## Plugin System
-![alt text](docs/images/plugin-cn.png)
-![alt text](docs/images/plugin-m-en.png)
-## Asset Data
-### Assets
-![alt text](docs/images/asset-en.png)
-![alt text](docs/images/asset-s-en.png)
-![alt text](docs/images/asset-s2-en.png)
+# List API keys
+./ScopeSentry apikey list
 
-### Quick syntax search：
-![alt text](docs/images/search.gif)
+# Fetch plugin key
+./ScopeSentry pluginkey
+```
 
-## Root Domain
-![alt text](docs/images/rootdomain-cn.png)
+### CLI Asset & Task Commands
+```bash
+# List projects
+scopesentry project list
 
-### Subdomains
-![alt text](docs/images/subdomain-en.png)
+# List assets with query syntax
+scopesentry asset list --type subdomain --search 'project == "default"'
 
-### Subdomain Takeover
-![alt text](docs/images/subt-en.png)
-
-### APP
-![alt text](docs/images/app-cn.png)
-
-### 小程序
-![alt text](docs/images/mp-cn.png)
-
-### URL
-![alt text](docs/images/craw-cn.png)
-
-### Crawler
-![alt text](docs/images/craw-en.png)
-
-### Sensitive Information
-![alt text](docs/images/sns-cn.png)
-
-### Directory Scanning
-![alt text](docs/images/dir-cn.png)
-
-### Vulnerabilities
-![alt text](docs/images/vul-en.png)
-
-### Page Monitoring
-![alt text](docs/images/page-en.png)
-![alt text](docs/images/page-change.png)
-## Projects
-
-![](docs/images/project-cn.png)
-
-## Project asset aggregation
-### Panel - Overview
-![](docs/images/project-dsh.png)
-### Subdomains
-![](docs/images/project-subdomain.png)
-### Port
-![](docs/images/project-port.png)
-### Service
-![](docs/images/project-server.png)
-
-## Tasks
-
-![](docs/images/create-task-en.png)
-
-## Task Progress
-
-![](docs/images/task-pg-en.png)
-
-## Nodes
-
-![](docs/images/node-cn.png)
+# Create a project
+scopesentry project create --name "example" --target "example.com"
+```
 
 
 #License

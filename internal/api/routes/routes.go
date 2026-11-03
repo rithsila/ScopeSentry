@@ -47,8 +47,8 @@ func loggerWithSkipPaths(skipPrefixes []string) gin.HandlerFunc {
 func SetupRouter() *gin.Engine {
 	router := gin.New()
 
-	// 配置日志中间件，跳过 /assets 和 /uploads 路径的日志
-	router.Use(loggerWithSkipPaths([]string{"/assets", "/uploads", "/images"}))
+	// 配置日志中间件，跳过 /images, /live, /ready 路径的日志
+	router.Use(loggerWithSkipPaths([]string{"/images", "/live", "/ready"}))
 
 	// 添加恢复中间件
 	router.Use(gin.Recovery())

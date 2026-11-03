@@ -75,8 +75,8 @@ func init() {
 	// 构建输出器
 	var cores []zapcore.Core
 
-	// 始终输出到控制台
-	consoleCore := zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), level)
+	// 始终输出到控制台 (输出到 stderr 以保持 stdout 纯净用于机器可读 JSON)
+	consoleCore := zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stderr), level)
 	cores = append(cores, consoleCore)
 
 	// 如果配置了日志文件路径，则也输出到文件

@@ -43,7 +43,10 @@ services:
       - scopesentry-network
 
   scope-sentry:
-    image: autumn27/scopesentry:latest
+    build:
+      context: .
+      dockerfile: dockerfile
+    image: scopesentry:headless
     container_name: scope-sentry
     restart: always
     ports:
@@ -59,7 +62,7 @@ services:
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD}
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://127.0.0.1:8082 || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:8082/ready || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 10

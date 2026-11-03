@@ -3,11 +3,13 @@ package bootstrap
 import (
 	"context"
 	"fmt"
+	"log"
+	"os"
+	"time"
+
 	"github.com/Autumn-27/ScopeSentry/internal/config"
 	"github.com/Autumn-27/ScopeSentry/internal/database/mongodb"
 	"go.mongodb.org/mongo-driver/bson"
-	"log"
-	"time"
 )
 
 // StartupEvent 启动事件处理函数
@@ -61,11 +63,17 @@ func init() {
 
 	//// 初始化数据库
 	RegisterStartupEvent(func(ctx context.Context) error {
+		if !mongodb.IsConnected {
+			return nil
+		}
 		return mongodb.CreateDatabase()
 	})
 
 	// 初始化通知接口
 	RegisterStartupEvent(func(ctx context.Context) error {
+		if !mongodb.IsConnected {
+			return nil
+		}
 		if err := mongodb.FindAll("notification", bson.M{"state": true}, bson.M{"_id": 0, "method": 1, "url": 1, "contentType": 1, "data": 1, "state": 1}, &config.NotificationApi); err != nil {
 			return err
 		}
@@ -76,13 +84,18 @@ func init() {
 	// 例如：初始化缓存、加载插件、启动定时任务等
 	err := ExecuteStartupEvents()
 	if err != nil {
-		log.Fatalf("Error during startup events: %v", err)
+		if mongodb.IsConnected {
+			log.Fatalf("Error during startup events: %v", err)
+		}
 		return
 	}
 }
 
 func Banner() error {
+	if len(os.Args) > 1 {
+		return nil
+	}
 	banner := "   _____                         _____            _              \n  / ____|                       / ____|          | |             \n | (___   ___ ___  _ __   ___  | (___   ___ _ __ | |_ _ __ _   _ \n  \\___ \\ / __/ _ \\| '_ \\ / _ \\  \\___ \\ / _ \\ '_ \\| __| '__| | | |\n  ____) | (_| (_) | |_) |  __/  ____) |  __/ | | | |_| |  | |_| |\n |_____/ \\___\\___/| .__/ \\___| |_____/ \\___|_| |_|\\__|_|   \\__, |\n                  | |                                       __/ |\n                  |_|                                      |___/ "
-	fmt.Println(banner)
+	fmt.Fprintln(os.Stderr, banner)
 	return nil
 }

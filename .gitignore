@@ -7,10 +7,11 @@ PLUGINKEY
 dist/
 uploads/
 .uploads/
-frontend/node_modules/
-frontend/dist-pro/
 ScopeSentry
+scopesentry
+bin/
 ScopeSentry-linux
 .cursor/mcp.json
 .cursor/
 .serena/
+.superpowers/

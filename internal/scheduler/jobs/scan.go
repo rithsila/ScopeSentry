@@ -38,6 +38,12 @@ var NodeService node.Service
 var CommonService common.Service
 
 func init() {
+	if mongodb.DB != nil {
+		InitScanJobs()
+	}
+}
+
+func InitScanJobs() {
 	ScanSvc = &scanService{
 		collection:               mongodb.DB.Collection("ScheduledTasks"),
 		pageMonitoringCollection: mongodb.DB.Collection("PageMonitoring"),
@@ -48,6 +54,9 @@ func init() {
 }
 
 func Scan(params string, nextTime string) error {
+	if ScanSvc == nil && mongodb.DB != nil {
+		InitScanJobs()
+	}
 	// 获取计划任务数据
 	ID, err := primitive.ObjectIDFromHex(params)
 	if err != nil {

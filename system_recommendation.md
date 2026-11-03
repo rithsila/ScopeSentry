@@ -6,7 +6,7 @@ ScopeSentry is a distributed asset discovery and vulnerability scanner. It is de
 
 ### Why ScopeSentry is Lightweight
 1. **Single Compiled Go Binary**: The backend uses Go 1.24 (Gin). It compiles to a native binary with low memory usage (~30MB–80MB idle).
-2. **Embedded Frontend**: The Vue 3 SPA is built and embedded directly into the Go binary (`//go:embed static/*`). You do not need Nginx to serve the UI.
+2. **Headless & Agent-First**: The web SPA has been excised in favor of native Model Context Protocol (MCP) and a lightweight CLI client. Static serving is limited to scan evidence images and swagger docs.
 3. **Distributed Master-Worker Model**: Heavy scanning tasks run on separate worker nodes (`ScopeSentry-Scan`). The central server only handles APIs and coordination.
 4. **Fast Native Tools**: Core scanning relies on compiled Go and Rust engines (`RustScan`, `httpx`, `subfinder`, `katana`, `nuclei`) instead of heavy Python scripts.
 5. **Configurable Goroutines**: Concurrency can be adjusted per module in `ModulesConfig` to prevent out-of-memory (OOM) errors on small servers.
@@ -17,7 +17,7 @@ ScopeSentry is a distributed asset discovery and vulnerability scanner. It is de
 
 | Component | Technology | Idle RAM | Active RAM | Role |
 | :--- | :--- | :--- | :--- | :--- |
-| **ScopeSentry Server** | Go 1.24 + Gin (embedded Vue 3) | ~40 MB | ~100–250 MB | Web UI, API, Task Management, MCP |
+| **ScopeSentry Server** | Go 1.24 + Gin (Headless MCP) | ~30 MB | ~80–150 MB | MCP, REST API, Task Management |
 | **Redis** | Redis 7 | ~15 MB | ~30–60 MB | Task Queues & Pub/Sub messaging |
 | **MongoDB** | MongoDB 7 | ~150 MB | ~300–800 MB | Asset storage & scan results |
 | **ScopeSentry-Scan** | Go Worker + CLI tools | ~50 MB | ~300 MB–1.5 GB | Port scan, crawling, nuclei tests |

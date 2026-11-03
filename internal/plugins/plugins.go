@@ -25,7 +25,9 @@ import (
 
 func init() {
 	GlobalPluginManager = NewPluginManager()
-	InstallPlugin()
+	if mongodb.IsConnected && mongodb.DB != nil {
+		InstallPlugin()
+	}
 }
 
 func LoadPlugin(code string, plgHash string) (interfaces.Plugin, error) {
@@ -143,6 +145,9 @@ type PluginInfo struct {
 }
 
 func InstallPlugin() {
+	if !mongodb.IsConnected || mongodb.DB == nil {
+		return
+	}
 	var result []PluginInfo
 	opts := mongoOptions.Find().
 		SetProjection(bson.M{

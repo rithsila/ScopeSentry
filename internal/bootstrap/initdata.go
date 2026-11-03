@@ -18,6 +18,9 @@ var ProjectList = make(map[string]string)
 
 // GetProjectList 从MongoDB获取项目列表并更新到ProjectList中
 func GetProjectList() error {
+	if !mongodb.IsConnected || mongodb.DB == nil {
+		return nil
+	}
 	collection := mongodb.DB.Collection("project")
 	opts := options.Find().SetProjection(bson.M{"_id": 1, "name": 1})
 	cursor, err := collection.Find(context.Background(), bson.M{}, opts)

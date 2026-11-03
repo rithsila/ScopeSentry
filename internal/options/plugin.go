@@ -40,6 +40,12 @@ type PluginOption struct {
 var PluginOptionInit PluginOption
 
 func init() {
+	if mongodb.DB != nil {
+		InitPluginOption()
+	}
+}
+
+func InitPluginOption() {
 	PluginOptionInit = PluginOption{
 		DB:                 mongodb.DB,
 		RedisClinet:        sasRedis.Client,
@@ -54,6 +60,9 @@ func init() {
 }
 
 func NewOption(hash string) PluginOption {
+	if PluginOptionInit.DB == nil && mongodb.DB != nil {
+		InitPluginOption()
+	}
 	return PluginOption{
 		DB:                 PluginOptionInit.DB,
 		RedisClinet:        PluginOptionInit.RedisClinet,

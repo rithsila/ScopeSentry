@@ -10,6 +10,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/Autumn-27/ScopeSentry/internal/database/mongodb"
 	"github.com/Autumn-27/ScopeSentry/internal/logger"
 	"github.com/Autumn-27/ScopeSentry/internal/models"
 	"go.mongodb.org/mongo-driver/bson"
@@ -17,6 +18,9 @@ import (
 )
 
 func CreatePageMonitoringTask() error {
+	if ScanSvc == nil && mongodb.DB != nil {
+		InitScanJobs()
+	}
 	logger.Info("create_page_monitoring_task")
 	filter := bson.M{"id": "page_monitoring"}
 	opts := options.FindOne()

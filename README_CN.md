@@ -1,6 +1,4 @@
-<div align=center>
-	<img src="docs/images/favicon.ico"/>
-</div>
+# ScopeSentry (Headless & Agent-First)
 
 中文 | [English](./README.md)
 
@@ -11,12 +9,18 @@ Scope Sentry是一款具有分布式资产测绘、子域名枚举、信息泄�
 
 服务器推荐：[lightnode](https://www.lightnode.com/?inviteCode=CQ11JU&promoteWay=LINK)
 
-## 编程语言
-服务端：python - FastApi
+## 架构
+- **服务端**: Go (Gin) Headless 服务端，原生集成 Model Context Protocol (MCP) 与 REST API
+- **CLI 客户端**: 独立轻量级 Go CLI 客户端 (`scopesentry`)
+- **扫描端**: Go 分布式扫描节点 (`ScopeSentry-Scan`)
+- **数据库**: MongoDB & Redis
 
-扫描端：go
-
-前端：vue - vue-element-plus-admin
+## Agent 与自动化支持
+ScopeSentry 专为 AI Agent 和自动化攻击面发现而设计：
+- **内置 MCP 服务**: 在 `/mcp` 端点暴露全部 17 个安全扫描和资产管理工具。
+- **独立 CLI**: `scopesentry` 纯 JSON stdout 输出，便于管道与脚本集成。
+- **无头凭证管理**: 通过 `./ScopeSentry apikey create --name <name>` 生成 API Key。
+- **开发指南**: 参阅 [AI_AGENT_GUIDE.md](./AI_AGENT_GUIDE.md) 与 [SKILL.md](./SKILL.md)。
 
 ## 网址
 
@@ -89,109 +93,38 @@ docker-compose -f scan-docker-compose.yml up -d
 ## 交流
 联系方式见下方
 
-## 赞助 && 合作
-如果项目对您有帮助，赞助作者一杯咖啡吧~
+## 命令行与 MCP 使用
 
-<img src="docs/images/zfb.png" alt="WX" width="200"/>
-<img src="docs/images/wx.jpg" alt="WX" width="200"/>
+ScopeSentry 作为无头扫描系统，通过 Model Context Protocol (MCP) 和专属 CLI 工具进行交互。
 
+### 健康检查与状态诊断
+```bash
+scopesentry doctor
+```
 
-## 截图
+### 无头管理凭证
+```bash
+# 创建管理员 API Key
+./ScopeSentry apikey create --name admin
 
-### 登录
+# 查看 API Key 列表
+./ScopeSentry apikey list
 
-![alt text](docs/images/login.png)
+# 获取插件密钥
+./ScopeSentry pluginkey
+```
 
-### 首页面板
-![alt text](docs/images/index-cn.png)
+### CLI 资产与任务查询
+```bash
+# 查询项目列表
+scopesentry project list
 
-## 插件系统
-![alt text](docs/images/plugin-cn.png)
-![alt text](docs/images/plugin-m-cn.png)
+# 查询特定资产 (支持语法DSL)
+scopesentry asset list --type subdomain --search 'project == "default"'
 
-## 资产数据
-### 资产
-![alt text](docs/images/asset-cn.png)
-![alt text](docs/images/screenshot1.png)
-![alt text](docs/images/screenshot2.png)
-![alt text](docs/images/asset-change.png)
-### 快捷语法搜索：
-![alt text](docs/images/search.gif)
-
-## 根域名
-![alt text](docs/images/rootdomain-cn.png)
-### 子域名
-![alt text](docs/images/subdomain-cn.png)
-
-### 子域名接管
-![alt text](docs/images/subt-cn.png)
-
-### APP
-![alt text](docs/images/app-cn.png)
-
-### 小程序
-![alt text](docs/images/mp-cn.png)
-
-### URL
-![alt text](docs/images/url-cn.png)
-
-### 爬虫
-![alt text](docs/images/craw-cn.png)
-
-### 敏感信息
-![alt text](docs/images/sns-cn.png)
-
-### 目录扫描
-![alt text](docs/images/dir-cn.png)
-
-### 漏洞
-![alt text](docs/images/vul-cn.png)
-
-### 页面监控
-![alt text](docs/images/page-cn.png)
-![alt text](docs/images/page-change.png)
-## 项目
-
-![](docs/images/project-cn.png)
-
-
-## 项目资产聚合
-### 面板-概况
-![](docs/images/project-dsh.png)
-### 子域名
-![](docs/images/project-subdomain.png)
-### 端口
-![](docs/images/project-port.png)
-### 服务
-![](docs/images/project-server.png)
-
-## 任务
-
-![](docs/images/create-task-cn.png)
-
-## 任务进度
-
-![](docs/images/task-pg-cn.png)
-
-## 节点
-
-![](docs/images/node-cn.png)
-
-
-Discord:
-
-[https://discord.gg/GWVwSBBm48](https://discord.gg/GWVwSBBm48)
-
-QQ:
-
-<img src="docs/images/qq.jpg" alt="QQ" width="200"/>
-
-WX:
-
-<img src="docs/images/wx-2.jpg" alt="WX" width="200"/>
-
-群满可以关注公众号后台私信拉群
-<img src="docs/images/wx.png" alt="WX" width="200"/>
+# 创建扫描项目
+scopesentry project create --name "example" --target "example.com"
+```
 
 # 许可证
 该项目所有分支遵循AGPL-3.0，另外需要遵循附加条款：

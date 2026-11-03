@@ -3,15 +3,22 @@ package middleware
 import (
 	"net/http"
 	"strings"
+	"sync"
 
 	"github.com/Autumn-27/ScopeSentry/internal/services/apikey"
 	"github.com/gin-gonic/gin"
 )
 
-var mcpApiKeyService apikey.Service
+var (
+	mcpApiKeyService     apikey.Service
+	mcpApiKeyServiceOnce sync.Once
+)
 
-func init() {
-	mcpApiKeyService = apikey.NewService()
+func getApiKeyService() apikey.Service {
+	mcpApiKeyServiceOnce.Do(func() {
+		mcpApiKeyService = apikey.NewService()
+	})
+	return mcpApiKeyService
 }
 
 // MCPAPIKeyMiddleware MCP 端点 API Key 认证中间件
@@ -26,7 +33,7 @@ func MCPAPIKeyMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		record, err := mcpApiKeyService.Validate(c.Request.Context(), rawKey)
+		record, err := getApiKeyService().Validate(c.Request.Context(), rawKey)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"code":    401,

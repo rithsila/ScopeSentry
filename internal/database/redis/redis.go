@@ -3,6 +3,8 @@ package redis
 import (
 	"context"
 	"fmt"
+	"os"
+
 	"github.com/Autumn-27/ScopeSentry/internal/logger"
 
 	"github.com/Autumn-27/ScopeSentry/internal/config"
@@ -11,13 +13,29 @@ import (
 
 var Client *redis.Client
 
+func isSkipRedisCommand() bool {
+	if len(os.Args) < 2 {
+		return false
+	}
+	switch os.Args[1] {
+	case "version", "--version", "-v", "pluginkey", "apikey", "help", "--help", "-h":
+		return true
+	}
+	return false
+}
+
 func init() {
-	// 创建 Redis 客户端
+	// 创建 Redis 客户端（本地结构体初始化）
 	client := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%s", config.GlobalConfig.Redis.IP, config.GlobalConfig.Redis.Port),
 		Password: config.GlobalConfig.Redis.Password,
 		DB:       0,
 	})
+	Client = client
+
+	if isSkipRedisCommand() {
+		return
+	}
 
 	// 测试连接
 	if err := client.Ping(context.Background()).Err(); err != nil {
@@ -25,7 +43,6 @@ func init() {
 		return
 	}
 
-	Client = client
 	logger.Info("Redis connected successfully")
 	return
 }

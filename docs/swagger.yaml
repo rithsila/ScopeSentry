@@ -3,58 +3,58 @@ definitions:
   github_com_Autumn-27_ScopeSentry-go_internal_api_response.BadRequestResponse:
     properties:
       code:
-        description: 请求错误状态码
+        description: Bad request status code
         example: 400
         type: integer
       message:
-        description: 错误消息
-        example: 请求错误
+        description: Error message
+        example: Bad request
         type: string
     type: object
   github_com_Autumn-27_ScopeSentry-go_internal_api_response.InternalServerErrorResponse:
     properties:
       code:
-        description: 服务器错误状态码
+        description: Internal server error status code
         example: 500
         type: integer
       message:
-        description: 错误消息
-        example: 服务器内部错误
+        description: Error message
+        example: Internal server error
         type: string
     type: object
   github_com_Autumn-27_ScopeSentry-go_internal_api_response.NotFoundResponse:
     properties:
       code:
-        description: 未找到状态码
+        description: Not found status code
         example: 404
         type: integer
       message:
-        description: 错误消息
-        example: 资源未找到
+        description: Error message
+        example: Resource not found
         type: string
     type: object
   github_com_Autumn-27_ScopeSentry-go_internal_api_response.SuccessResponse:
     properties:
       code:
-        description: 成功状态码
+        description: Success status code
         example: 200
         type: integer
       data:
-        description: 响应数据
+        description: Response data
       message:
-        description: 成功消息
-        example: 操作成功
+        description: Success message
+        example: Operation succeeded
         type: string
     type: object
   github_com_Autumn-27_ScopeSentry-go_internal_api_response.UnauthorizedResponse:
     properties:
       code:
-        description: 未授权状态码
+        description: Unauthorized status code
         example: 401
         type: integer
       message:
-        description: 错误消息
-        example: 未授权访问
+        description: Error message
+        example: Unauthorized access
         type: string
     type: object
   github_com_Autumn-27_ScopeSentry-go_internal_models.Asset:
@@ -185,7 +185,7 @@ definitions:
   github_com_Autumn-27_ScopeSentry-go_internal_models.PageMonitoringContentRequest:
     properties:
       flag:
-        description: '1: 获取上一次响应, 2: 获取当前响应'
+        description: '1: Get previous response, 2: Get current response'
         type: string
       id:
         type: string
@@ -207,17 +207,17 @@ definitions:
           items:
             type: string
           type: array
-        description: Filter 过滤条件
+        description: Filter conditions
         type: object
       pageIndex:
         type: integer
       pageSize:
         type: integer
       search:
-        description: SearchExpression 搜索表达式，如 "url=example.com && statuscode=200"
+        description: Search expression, e.g. "url=example.com && statuscode=200"
         type: string
       searchType:
-        description: SearchType 搜索类型，对应SearchKey中的key
+        description: Search type corresponding to key in SearchKey
         type: string
       sort:
         additionalProperties:
@@ -318,7 +318,7 @@ definitions:
         type: string
     type: object
   internal_api_handlers_system.VersionListResponse:
-    description: 版本信息列表
+    description: Version information list
     properties:
       list:
         items:
@@ -378,7 +378,7 @@ definitions:
         minimum: 1
         type: integer
       search:
-        example: 测试
+        example: test
         type: string
     required:
     - pageIndex
@@ -390,7 +390,7 @@ info:
     email: support@swagger.io
     name: API Support
     url: http://www.swagger.io/support
-  description: ScopeSentry 是一个安全扫描和资产管理平台
+  description: ScopeSentry is a security scanning and asset management platform
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
@@ -402,9 +402,9 @@ paths:
     post:
       consumes:
       - application/json
-      description: 创建新的资产
+      description: Create a new asset
       parameters:
-      - description: 资产信息
+      - description: Asset information
         in: body
         name: asset
         required: true
@@ -430,16 +430,16 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/github_com_Autumn-27_ScopeSentry-go_internal_api_response.InternalServerErrorResponse'
-      summary: 创建资产
+      summary: Create asset
       tags:
-      - 资产
+      - Asset
   /api/assets/{id}:
     delete:
       consumes:
       - application/json
-      description: 删除指定ID的资产
+      description: Delete the asset with the specified ID
       parameters:
-      - description: 资产ID
+      - description: Asset ID
         in: path
         name: id
         required: true
@@ -463,15 +463,15 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/github_com_Autumn-27_ScopeSentry-go_internal_api_response.InternalServerErrorResponse'
-      summary: 删除资产
+      summary: Delete asset
       tags:
-      - 资产
+      - Asset
     get:
       consumes:
       - application/json
-      description: 根据ID获取单个资产的详细信息
+      description: Get detailed information of a single asset by ID
       parameters:
-      - description: 资产ID
+      - description: Asset ID
         in: path
         name: id
         required: true
@@ -500,20 +500,20 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/github_com_Autumn-27_ScopeSentry-go_internal_api_response.InternalServerErrorResponse'
-      summary: 获取单个资产
+      summary: Get a single asset
       tags:
-      - 资产
+      - Asset
     put:
       consumes:
       - application/json
-      description: 更新指定ID的资产信息
+      description: Update asset information with the specified ID
       parameters:
-      - description: 资产ID
+      - description: Asset ID
         in: path
         name: id
         required: true
         type: string
-      - description: 资产信息
+      - description: Asset information
         in: body
         name: asset
         required: true
@@ -543,16 +543,16 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/github_com_Autumn-27_ScopeSentry-go_internal_api_response.InternalServerErrorResponse'
-      summary: 更新资产
+      summary: Update asset
       tags:
-      - 资产
+      - Asset
   /api/assets/{id}/changelog:
     get:
       consumes:
       - application/json
-      description: 获取指定ID资产的变更历史记录
+      description: Get change history for the asset with the specified ID
       parameters:
-      - description: 资产ID
+      - description: Asset ID
         in: path
         name: id
         required: true
@@ -583,16 +583,16 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/github_com_Autumn-27_ScopeSentry-go_internal_api_response.InternalServerErrorResponse'
-      summary: 获取资产变更日志
+      summary: Get asset change log
       tags:
-      - 资产
+      - Asset
   /api/assets/{id}/screenshot:
     get:
       consumes:
       - application/json
-      description: 获取指定ID资产的截图
+      description: Get screenshot for the asset with the specified ID
       parameters:
-      - description: 资产ID
+      - description: Asset ID
         in: path
         name: id
         required: true
@@ -621,16 +621,16 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/github_com_Autumn-27_ScopeSentry-go_internal_api_response.InternalServerErrorResponse'
-      summary: 获取资产截图
+      summary: Get asset screenshot
       tags:
-      - 资产
+      - Asset
   /api/assets/asset:
     post:
       consumes:
       - application/json
-      description: 获取资产列表，支持分页、排序和过滤
+      description: Get asset list with pagination, sorting, and filtering support
       parameters:
-      - description: 查询参数
+      - description: Query parameters
         in: body
         name: query
         required: true
@@ -661,28 +661,28 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/github_com_Autumn-27_ScopeSentry-go_internal_api_response.InternalServerErrorResponse'
-      summary: 获取资产列表
+      summary: Get asset list
       tags:
-      - 资产
+      - Asset
   /api/assets/deduplicate/{assetType}:
     post:
       consumes:
       - application/json
-      description: 对指定类型的资产进行去重处理
+      description: Deduplicate assets of the specified type
       parameters:
-      - description: 资产类型
+      - description: Asset type
         in: path
         name: assetType
         required: true
         type: string
-      - description: 过滤条件
+      - description: Filter conditions
         in: body
         name: filter
         required: true
         schema:
           additionalProperties: true
           type: object
-      - description: 分组字段
+      - description: Grouping fields
         in: body
         name: groupFields
         required: true
@@ -705,14 +705,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/github_com_Autumn-27_ScopeSentry-go_internal_api_response.InternalServerErrorResponse'
-      summary: 资产去重
+      summary: Deduplicate assets
       tags:
-      - 资产
+      - Asset
   /node:
     get:
       consumes:
       - application/json
-      description: 获取所有在线节点的数据
+      description: Get data of all online worker nodes
       produces:
       - application/json
       responses:
@@ -746,9 +746,9 @@ paths:
     post:
       consumes:
       - application/json
-      description: 获取页面监控内容接口
+      description: Endpoint to get page monitoring content
       parameters:
-      - description: 内容请求
+      - description: Content request
         in: body
         name: contentRequest
         required: true
@@ -784,9 +784,9 @@ paths:
     post:
       consumes:
       - application/json
-      description: 获取页面监控差异接口
+      description: Endpoint to get page monitoring diff
       parameters:
-      - description: 差异请求
+      - description: Diff request
         in: body
         name: diffRequest
         required: true
@@ -825,9 +825,9 @@ paths:
     post:
       consumes:
       - application/json
-      description: 获取页面监控历史记录接口
+      description: Endpoint to get page monitoring history
       parameters:
-      - description: 历史记录请求
+      - description: History request
         in: body
         name: historyRequest
         required: true
@@ -865,9 +865,9 @@ paths:
     post:
       consumes:
       - application/json
-      description: 支持name字段模糊搜索与分页
+      description: Supports fuzzy search on the name field and pagination
       parameters:
-      - description: 查询参数
+      - description: Query parameters
         in: body
         name: data
         required: true
@@ -900,14 +900,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/github_com_Autumn-27_ScopeSentry-go_internal_api_response.InternalServerErrorResponse'
-      summary: 获取任务列表
+      summary: Get scan task list
       tags:
       - task
   /system/version:
     get:
       consumes:
       - application/json
-      description: 获取 ScopeSentry 服务端及所有节点的当前版本信息
+      description: Get current version information for the ScopeSentry server and all worker nodes
       produces:
       - application/json
       responses:
@@ -942,15 +942,15 @@ paths:
     get:
       consumes:
       - application/json
-      description: 获取用户列表接口
+      description: Endpoint to get user list
       parameters:
       - default: 1
-        description: 页码
+        description: Page number
         in: query
         name: page
         type: integer
       - default: 10
-        description: 每页数量
+        description: Page size
         in: query
         name: size
         type: integer
@@ -984,9 +984,9 @@ paths:
     delete:
       consumes:
       - application/json
-      description: 删除用户接口
+      description: Endpoint to delete user
       parameters:
-      - description: 用户ID
+      - description: User ID
         in: path
         name: id
         required: true
@@ -1017,9 +1017,9 @@ paths:
     get:
       consumes:
       - application/json
-      description: 获取单个用户接口
+      description: Endpoint to get a single user
       parameters:
-      - description: 用户ID
+      - description: User ID
         in: path
         name: id
         required: true
@@ -1055,14 +1055,14 @@ paths:
     put:
       consumes:
       - application/json
-      description: 更新用户接口
+      description: Endpoint to update user
       parameters:
-      - description: 用户ID
+      - description: User ID
         in: path
         name: id
         required: true
         type: string
-      - description: 更新信息
+      - description: Update information
         in: body
         name: updateRequest
         required: true
@@ -1104,9 +1104,9 @@ paths:
     post:
       consumes:
       - application/json
-      description: 用户登录接口
+      description: User login endpoint
       parameters:
-      - description: 登录信息
+      - description: Login information
         in: body
         name: loginRequest
         required: true
@@ -1139,16 +1139,16 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/github_com_Autumn-27_ScopeSentry-go_internal_api_response.InternalServerErrorResponse'
-      summary: 用户登录
+      summary: User login
       tags:
       - user
   /users/register:
     post:
       consumes:
       - application/json
-      description: 用户注册接口
+      description: User registration endpoint
       parameters:
-      - description: 注册信息
+      - description: Registration information
         in: body
         name: registerRequest
         required: true

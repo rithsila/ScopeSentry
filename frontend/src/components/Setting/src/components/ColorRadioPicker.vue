@@ -2,6 +2,7 @@
 import { PropType, watch, unref, ref } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 import { useDesign } from '@/hooks/web/useDesign'
+import { colorIsDark } from '@/utils/color'
 
 const { getPrefixCls } = useDesign()
 
@@ -38,18 +39,23 @@ watch(
 </script>
 
 <template>
-  <div :class="prefixCls" class="flex flex-wrap space-x-14px">
+  <div :class="prefixCls" class="flex flex-wrap gap-2.5 justify-center">
     <span
       v-for="(item, i) in schema"
       :key="`radio-${i}`"
-      class="w-20px h-20px cursor-pointer rounded-2px border-solid border-gray-300 border-2px text-center leading-20px mb-5px"
+      class="w-22px h-22px cursor-pointer rounded-2px border border-[#1b3d1b] flex items-center justify-center transition-all hover:scale-110"
       :class="{ 'is-active': colorVal === item }"
       :style="{
         background: item
       }"
       @click="colorVal = item"
     >
-      <Icon v-if="colorVal === item" color="#fff" icon="ep:check" :size="16" />
+      <Icon
+        v-if="colorVal === item"
+        :color="colorIsDark(item) ? '#00ff41' : '#050c05'"
+        icon="ep:check"
+        :size="14"
+      />
     </span>
   </div>
 </template>
@@ -59,7 +65,9 @@ watch(
 
 .@{prefix-cls} {
   .is-active {
-    border-color: var(--el-color-primary);
+    border: 2px solid #ffffff !important;
+    box-shadow: 0 0 8px rgba(0, 255, 65, 0.6) !important;
+    transform: scale(1.1);
   }
 }
 </style>

@@ -366,6 +366,24 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     ]
   },
   {
+    path: '/help',
+    component: Layout,
+    name: 'Help',
+    meta: {},
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/Help/Help.vue'),
+        name: 'Help',
+        meta: {
+          title: t('router.help'),
+          icon: 'solar:help-bold',
+          noCache: true
+        }
+      }
+    ]
+  },
+  {
     path: '/about',
     component: Layout,
     name: 'About',

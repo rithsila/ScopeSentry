@@ -3,6 +3,19 @@ import { ElMessage } from 'element-plus'
 import qs from 'qs'
 import { SUCCESS_CODE } from '@/constants'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import { i18n } from '@/plugins/vueI18n'
+
+const translateMessage = (message: string) => {
+  if (!message) return ''
+  try {
+    if (i18n?.global && typeof (i18n.global as any).te === 'function' && (i18n.global as any).te(message)) {
+      return (i18n.global as any).t(message)
+    }
+  } catch (e) {
+    console.error(e)
+  }
+  return message
+}
 
 const defaultRequestInterceptors = (config: InternalAxiosRequestConfig) => {
   if (
@@ -36,11 +49,11 @@ const defaultResponseInterceptors = (response: AxiosResponse) => {
     return response
   } else if (response.data.code === SUCCESS_CODE) {
     if (response?.data?.message) {
-      ElMessage.success(response?.data?.message)
+      ElMessage.success(translateMessage(response?.data?.message))
     }
     return response.data
   } else {
-    ElMessage.error(response?.data?.message)
+    ElMessage.error(translateMessage(response?.data?.message))
     if (response?.data?.code === 401) {
       const userStore = useUserStoreWithOut()
       userStore.logout()

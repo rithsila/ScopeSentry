@@ -143,85 +143,75 @@ watch(
 </script>
 
 <template>
-  <div :class="prefixCls">
-    <div class="flex justify-between items-center">
-      <span class="text-14px">{{ t('setting.breadcrumb') }}</span>
-      <ElSwitch v-model="breadcrumb" @change="breadcrumbChange" />
+  <div :class="prefixCls" class="flex flex-col">
+    <div class="py-2 px-1 border-b border-[#132a13]/60 flex justify-between items-center hover:bg-[#0e1b0e]/50 transition-colors">
+      <span class="text-12px font-mono text-[#8a9e8a]">{{ t('setting.breadcrumb') }}</span>
+      <ElSwitch v-model="breadcrumb" @change="breadcrumbChange" size="small" />
     </div>
 
-    <div class="flex justify-between items-center">
-      <span class="text-14px">{{ t('setting.breadcrumbIcon') }}</span>
-      <ElSwitch v-model="breadcrumbIcon" @change="breadcrumbIconChange" />
+    <div class="py-2 px-1 border-b border-[#132a13]/60 flex justify-between items-center hover:bg-[#0e1b0e]/50 transition-colors">
+      <span class="text-12px font-mono text-[#8a9e8a]">{{ t('setting.breadcrumbIcon') }}</span>
+      <ElSwitch v-model="breadcrumbIcon" @change="breadcrumbIconChange" size="small" />
     </div>
 
-    <div class="flex justify-between items-center">
-      <span class="text-14px">{{ t('setting.hamburgerIcon') }}</span>
-      <ElSwitch v-model="hamburger" @change="hamburgerChange" />
+    <div class="py-2 px-1 border-b border-[#132a13]/60 flex justify-between items-center hover:bg-[#0e1b0e]/50 transition-colors">
+      <span class="text-12px font-mono text-[#8a9e8a]">{{ t('setting.hamburgerIcon') }}</span>
+      <ElSwitch v-model="hamburger" @change="hamburgerChange" size="small" />
     </div>
 
-    <div class="flex justify-between items-center">
-      <span class="text-14px">{{ t('setting.screenfullIcon') }}</span>
-      <ElSwitch v-model="screenfull" @change="screenfullChange" />
+    <div class="py-2 px-1 border-b border-[#132a13]/60 flex justify-between items-center hover:bg-[#0e1b0e]/50 transition-colors">
+      <span class="text-12px font-mono text-[#8a9e8a]">{{ t('setting.screenfullIcon') }}</span>
+      <ElSwitch v-model="screenfull" @change="screenfullChange" size="small" />
     </div>
 
-    <div class="flex justify-between items-center">
-      <span class="text-14px">{{ t('setting.sizeIcon') }}</span>
-      <ElSwitch v-model="size" @change="sizeChange" />
+    <div class="py-2 px-1 border-b border-[#132a13]/60 flex justify-between items-center hover:bg-[#0e1b0e]/50 transition-colors">
+      <span class="text-12px font-mono text-[#8a9e8a]">{{ t('setting.sizeIcon') }}</span>
+      <ElSwitch v-model="size" @change="sizeChange" size="small" />
     </div>
 
-    <div class="flex justify-between items-center">
-      <span class="text-14px">{{ t('setting.localeIcon') }}</span>
-      <ElSwitch v-model="locale" @change="localeChange" />
+    <div class="py-2 px-1 border-b border-[#132a13]/60 flex justify-between items-center hover:bg-[#0e1b0e]/50 transition-colors">
+      <span class="text-12px font-mono text-[#8a9e8a]">{{ t('setting.localeIcon') }}</span>
+      <ElSwitch v-model="locale" @change="localeChange" size="small" />
     </div>
 
-    <div class="flex justify-between items-center">
-      <span class="text-14px">{{ t('setting.tagsView') }}</span>
-      <ElSwitch v-model="tagsView" @change="tagsViewChange" />
+    <div class="py-2 px-1 border-b border-[#132a13]/60 flex justify-between items-center hover:bg-[#0e1b0e]/50 transition-colors">
+      <span class="text-12px font-mono text-[#8a9e8a]">{{ t('setting.tagsView') }}</span>
+      <ElSwitch v-model="tagsView" @change="tagsViewChange" size="small" />
     </div>
 
-    <div class="flex justify-between items-center">
-      <span class="text-14px">{{ t('setting.tagsViewIcon') }}</span>
-      <ElSwitch v-model="tagsViewIcon" @change="tagsViewIconChange" />
+    <div class="py-2 px-1 border-b border-[#132a13]/60 flex justify-between items-center hover:bg-[#0e1b0e]/50 transition-colors">
+      <span class="text-12px font-mono text-[#8a9e8a]">{{ t('setting.tagsViewIcon') }}</span>
+      <ElSwitch v-model="tagsViewIcon" @change="tagsViewIconChange" size="small" />
     </div>
 
-    <div class="flex justify-between items-center">
-      <span class="text-14px">{{ t('setting.logo') }}</span>
-      <ElSwitch v-model="logo" @change="logoChange" />
+    <div class="py-2 px-1 border-b border-[#132a13]/60 flex justify-between items-center hover:bg-[#0e1b0e]/50 transition-colors">
+      <span class="text-12px font-mono text-[#8a9e8a]">{{ t('setting.logo') }}</span>
+      <ElSwitch v-model="logo" @change="logoChange" size="small" />
     </div>
 
-    <div class="flex justify-between items-center">
-      <span class="text-14px">{{ t('setting.uniqueOpened') }}</span>
-      <ElSwitch v-model="uniqueOpened" @change="uniqueOpenedChange" />
+    <div class="py-2 px-1 border-b border-[#132a13]/60 flex justify-between items-center hover:bg-[#0e1b0e]/50 transition-colors">
+      <span class="text-12px font-mono text-[#8a9e8a]">{{ t('setting.uniqueOpened') }}</span>
+      <ElSwitch v-model="uniqueOpened" @change="uniqueOpenedChange" size="small" />
     </div>
 
-    <div class="flex justify-between items-center">
-      <span class="text-14px">{{ t('setting.fixedHeader') }}</span>
-      <ElSwitch v-model="fixedHeader" @change="fixedHeaderChange" />
+    <div class="py-2 px-1 border-b border-[#132a13]/60 flex justify-between items-center hover:bg-[#0e1b0e]/50 transition-colors">
+      <span class="text-12px font-mono text-[#8a9e8a]">{{ t('setting.fixedHeader') }}</span>
+      <ElSwitch v-model="fixedHeader" @change="fixedHeaderChange" size="small" />
     </div>
 
-    <div class="flex justify-between items-center">
-      <span class="text-14px">{{ t('setting.footer') }}</span>
-      <ElSwitch v-model="footer" @change="footerChange" />
+    <div class="py-2 px-1 border-b border-[#132a13]/60 flex justify-between items-center hover:bg-[#0e1b0e]/50 transition-colors">
+      <span class="text-12px font-mono text-[#8a9e8a]">{{ t('setting.footer') }}</span>
+      <ElSwitch v-model="footer" @change="footerChange" size="small" />
     </div>
 
-    <div class="flex justify-between items-center">
-      <span class="text-14px">{{ t('setting.greyMode') }}</span>
-      <ElSwitch v-model="greyMode" @change="greyModeChange" />
+    <div class="py-2 px-1 border-b border-[#132a13]/60 flex justify-between items-center hover:bg-[#0e1b0e]/50 transition-colors">
+      <span class="text-12px font-mono text-[#8a9e8a]">{{ t('setting.greyMode') }}</span>
+      <ElSwitch v-model="greyMode" @change="greyModeChange" size="small" />
     </div>
 
-    <!-- <div class="flex justify-between items-center">
-      <span class="text-14px">{{ t('setting.dynamicRouter') }}</span>
-      <ElSwitch v-model="dynamicRouter" @change="dynamicRouterChange" />
-    </div>
-
-    <div class="flex justify-between items-center">
-      <span class="text-14px">{{ t('setting.serverDynamicRouter') }}</span>
-      <ElSwitch v-model="serverDynamicRouter" @change="serverDynamicRouterChange" />
-    </div> -->
-
-    <div class="flex justify-between items-center">
-      <span class="text-14px">{{ t('setting.fixedMenu') }}</span>
-      <ElSwitch v-model="fixedMenu" @change="fixedMenuChange" />
+    <div class="py-2 px-1 flex justify-between items-center hover:bg-[#0e1b0e]/50 transition-colors">
+      <span class="text-12px font-mono text-[#8a9e8a]">{{ t('setting.fixedMenu') }}</span>
+      <ElSwitch v-model="fixedMenu" @change="fixedMenuChange" size="small" />
     </div>
   </div>
 </template>

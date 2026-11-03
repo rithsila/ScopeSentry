@@ -280,11 +280,11 @@ export const useAppStore = defineStore('app', {
       const isDarkColor = colorIsDark(color)
       const theme: Recordable = {
         // 左侧菜单边框颜色
-        leftMenuBorderColor: isDarkColor ? 'inherit' : '#eee',
+        leftMenuBorderColor: isDarkColor ? '#1b3d1b' : '#eee',
         // 左侧菜单背景颜色
         leftMenuBgColor: color,
         // 左侧菜单浅色背景颜色
-        leftMenuBgLightColor: isDarkColor ? lighten(color!, 6) : color,
+        leftMenuBgLightColor: isDarkColor ? '#0e1b0e' : color,
         // 左侧菜单选中背景颜色
         leftMenuBgActiveColor: isDarkColor
           ? 'var(--el-color-primary)'
@@ -294,13 +294,13 @@ export const useAppStore = defineStore('app', {
           ? 'var(--el-color-primary)'
           : hexToRGB(unref(primaryColor), 0.1),
         // 左侧菜单字体颜色
-        leftMenuTextColor: isDarkColor ? '#bfcbd9' : '#333',
-        // 左侧菜单选中字体颜色
-        leftMenuTextActiveColor: isDarkColor ? '#fff' : 'var(--el-color-primary)',
+        leftMenuTextColor: isDarkColor ? '#8a9e8a' : '#333',
+        // 左侧菜单选中字体颜色 (dark on neon primary background)
+        leftMenuTextActiveColor: isDarkColor ? '#050c05' : 'var(--el-color-primary)',
         // logo字体颜色
-        logoTitleTextColor: isDarkColor ? '#fff' : 'inherit',
+        logoTitleTextColor: isDarkColor ? '#00ff41' : 'inherit',
         // logo边框颜色
-        logoBorderColor: isDarkColor ? color : '#eee'
+        logoBorderColor: isDarkColor ? '#1b3d1b' : '#eee'
       }
       this.setTheme(theme)
       this.setCssVarTheme()

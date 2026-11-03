@@ -36,14 +36,14 @@
   --login-bg-color: #050c05;
 
   /* left menu start */
-  --left-menu-max-width: 200px;
+  --left-menu-max-width: 240px;
   --left-menu-min-width: 64px;
   --left-menu-bg-color: #0a140a;
   --left-menu-bg-light-color: #0e1b0e;
-  --left-menu-bg-active-color: #1b3d1b;
+  --left-menu-bg-active-color: #00ff41;
   --left-menu-text-color: #8a9e8a;
-  --left-menu-text-active-color: #00ff41;
-  --left-menu-collapse-bg-active-color: #1b3d1b;
+  --left-menu-text-active-color: #050c05;
+  --left-menu-collapse-bg-active-color: #00ff41;
   --left-menu-border-color: #1b3d1b;
   /* left menu end */
 

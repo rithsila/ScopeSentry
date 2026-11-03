@@ -276,7 +276,8 @@ export default {
     login: '登录',
     pluginsManager: '插件管理',
     dashboard: '首页',
-    document: '文档'
+    document: '文档',
+    help: '帮助'
   },
   permission: {
     hasPermission: '请设置操作权限值'
@@ -892,5 +893,14 @@ export default {
     showOrHiddenSortable: '显示/隐藏排序',
     videoPreview: '视频预览',
     cardTable: '卡片表格'
+  },
+  api: {
+    system: {
+      version: {
+        success: '系统版本检查完成',
+        redis_error: 'Redis服务错误',
+        redis_hash_error: '获取版本信息失败'
+      }
+    }
   }
 }

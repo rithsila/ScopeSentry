@@ -68,11 +68,11 @@ const setMenuTheme = (color: string) => {
   const isDarkColor = colorIsDark(color)
   const theme: Recordable = {
     // 左侧菜单边框颜色
-    leftMenuBorderColor: isDarkColor ? 'inherit' : '#eee',
+    leftMenuBorderColor: isDarkColor ? '#1b3d1b' : '#eee',
     // 左侧菜单背景颜色
     leftMenuBgColor: color,
     // 左侧菜单浅色背景颜色
-    leftMenuBgLightColor: isDarkColor ? lighten(color!, 6) : color,
+    leftMenuBgLightColor: isDarkColor ? '#0e1b0e' : color,
     // 左侧菜单选中背景颜色
     leftMenuBgActiveColor: isDarkColor
       ? 'var(--el-color-primary)'
@@ -82,13 +82,13 @@ const setMenuTheme = (color: string) => {
       ? 'var(--el-color-primary)'
       : hexToRGB(unref(primaryColor), 0.1),
     // 左侧菜单字体颜色
-    leftMenuTextColor: isDarkColor ? '#bfcbd9' : '#333',
-    // 左侧菜单选中字体颜色
-    leftMenuTextActiveColor: isDarkColor ? '#fff' : 'var(--el-color-primary)',
+    leftMenuTextColor: isDarkColor ? '#8a9e8a' : '#333',
+    // 左侧菜单选中字体颜色 (dark on neon green)
+    leftMenuTextActiveColor: isDarkColor ? '#050c05' : 'var(--el-color-primary)',
     // logo字体颜色
-    logoTitleTextColor: isDarkColor ? '#fff' : 'inherit',
+    logoTitleTextColor: isDarkColor ? '#00ff41' : 'inherit',
     // logo边框颜色
-    logoBorderColor: isDarkColor ? color : '#eee'
+    logoBorderColor: isDarkColor ? '#1b3d1b' : '#eee'
   }
   appStore.setTheme(theme)
   appStore.setCssVarTheme()
@@ -197,15 +197,20 @@ const clear = () => {
 <template>
   <div
     :class="prefixCls"
-    class="fixed top-[90%] right-0 w-40px h-40px flex items-center justify-center bg-[var(--el-color-primary)] cursor-pointer z-10"
+    class="fixed top-[90%] right-0 w-40px h-40px flex items-center justify-center bg-[#1b3d1b] border border-[#00ff41] cursor-pointer z-10"
     @click="drawer = true"
   >
-    <Icon icon="ant-design:setting-outlined" color="#fff" />
+    <Icon icon="ant-design:setting-outlined" color="#00ff41" />
   </div>
 
-  <ElDrawer v-model="drawer" direction="rtl" size="350px" :z-index="4000">
+  <ElDrawer v-model="drawer" direction="rtl" size="340px" :z-index="4000" class="terminal-setting-drawer">
     <template #header>
-      <span class="text-16px font-700">{{ t('setting.projectSetting') }}</span>
+      <div class="flex items-center space-x-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-[#00ff41] shadow-[0_0_8px_#00ff41] animate-pulse"></span>
+        <span class="text-14px font-700 tracking-wider text-[#00ff41] font-mono">
+          [ SYSTEM // SETTINGS ]
+        </span>
+      </div>
     </template>
 
     <div class="text-center">
@@ -222,14 +227,14 @@ const clear = () => {
       <ColorRadioPicker
         v-model="systemTheme"
         :schema="[
-          '#409eff',
-          '#009688',
-          '#536dfe',
-          '#ff5c93',
-          '#ee4f12',
-          '#0096c7',
-          '#9c27b0',
-          '#ff9800'
+          '#00ff41',
+          '#00e5ff',
+          '#ffb000',
+          '#10b981',
+          '#00ffcc',
+          '#38bdf8',
+          '#a855f7',
+          '#f43f5e'
         ]"
         @change="setSystemTheme"
       />
@@ -239,14 +244,14 @@ const clear = () => {
       <ColorRadioPicker
         v-model="headerTheme"
         :schema="[
-          '#fff',
-          '#151515',
-          '#5172dc',
-          '#e74c3c',
-          '#24292e',
-          '#394664',
-          '#009688',
-          '#383f45'
+          '#0a140a',
+          '#050c05',
+          '#0e1b0e',
+          '#132a13',
+          '#1b3d1b',
+          '#002b11',
+          '#0f172a',
+          '#18181b'
         ]"
         @change="setHeaderTheme"
       />
@@ -257,14 +262,14 @@ const clear = () => {
         <ColorRadioPicker
           v-model="menuTheme"
           :schema="[
-            '#fff',
-            '#001529',
-            '#212121',
-            '#273352',
-            '#191b24',
-            '#383f45',
-            '#001628',
-            '#344058'
+            '#0a140a',
+            '#050c05',
+            '#0e1b0e',
+            '#132a13',
+            '#1b3d1b',
+            '#001f0c',
+            '#0f172a',
+            '#18181b'
           ]"
           @change="setMenuTheme"
         />
@@ -276,13 +281,13 @@ const clear = () => {
     <InterfaceDisplay />
 
     <ElDivider />
-    <div>
-      <BaseButton type="primary" class="w-full" @click="copyConfig">{{
-        t('setting.copy')
-      }}</BaseButton>
+    <div class="mt-4">
+      <BaseButton type="primary" class="w-full !bg-[#00ff41] !border-[#00ff41] !text-[#050c05] font-700 tracking-wider font-mono hover:!bg-[#33ff67]" @click="copyConfig">
+        {{ t('setting.copy') }}
+      </BaseButton>
     </div>
-    <div class="mt-5px">
-      <BaseButton type="danger" class="w-full" @click="clear">
+    <div class="mt-2.5">
+      <BaseButton type="danger" class="w-full !bg-[#140a0a] !border-[#f43f5e] !text-[#f43f5e] font-600 tracking-wider font-mono hover:!bg-[#f43f5e] hover:!text-[#050c05]" @click="clear">
         {{ t('setting.clearAndReset') }}
       </BaseButton>
     </div>
@@ -294,5 +299,8 @@ const clear = () => {
 
 .@{prefix-cls} {
   border-radius: 6px 0 0 6px;
+  background-color: #1b3d1b !important;
+  border: 1px solid #00ff41 !important;
+  border-right: none !important;
 }
 </style>

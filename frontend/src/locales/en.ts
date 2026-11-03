@@ -277,7 +277,8 @@ export default {
     login: 'Login',
     pluginsManager: 'Plugins Manager',
     dashboard: 'Dashboard',
-    document: 'Document'
+    document: 'Document',
+    help: 'Help'
   },
   permission: {
     hasPermission: 'Please set the operation permission value'
@@ -900,5 +901,14 @@ export default {
     showOrHiddenSortable: 'Show or hidden sortable',
     videoPreview: 'Video preview',
     cardTable: 'Card table'
+  },
+  api: {
+    system: {
+      version: {
+        success: 'System version check completed',
+        redis_error: 'Redis service error',
+        redis_hash_error: 'Failed to retrieve version information from Redis'
+      }
+    }
   }
 }

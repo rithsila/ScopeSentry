@@ -109,3 +109,204 @@ html,
 .el-popup-parent--hidden {
   width: 100% !important;
 }
+
+// Dark phosphor terminal high-specificity component overrides
+.v-menu,
+.el-menu,
+.el-menu-item,
+.el-sub-menu__title {
+  background-color: #0a140a !important;
+  color: #8a9e8a !important;
+  font-size: 13px !important;
+}
+
+.el-menu-item,
+.el-sub-menu__title {
+  height: 46px !important;
+  line-height: 46px !important;
+  padding: 0 16px !important;
+}
+
+.v-menu .v-menu__title,
+.el-menu-item .v-menu__title,
+.el-sub-menu__title .v-menu__title {
+  margin-left: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px !important;
+}
+
+.el-menu-item.is-active,
+.v-menu .el-menu-item.is-active,
+.v-menu :deep(.el-menu) .el-menu-item.is-active,
+.v-menu :deep(.el-menu-item.is-active) {
+  background-color: #00ff41 !important;
+  color: #050c05 !important;
+  font-weight: 700 !important;
+  border-left: 3px solid #050c05 !important;
+  box-shadow: 0 0 12px rgba(0, 255, 65, 0.35) !important;
+
+  .v-menu__title,
+  span,
+  a {
+    color: #050c05 !important;
+    font-weight: 700 !important;
+  }
+
+  .el-icon,
+  .iconify,
+  svg,
+  svg path,
+  use {
+    color: #050c05 !important;
+    fill: #050c05 !important;
+    stroke: #050c05 !important;
+  }
+
+  &:hover {
+    background-color: #33ff67 !important;
+    color: #050c05 !important;
+
+    .v-menu__title,
+    span {
+      color: #050c05 !important;
+    }
+
+    .el-icon,
+    .iconify,
+    svg,
+    svg path,
+    use {
+      color: #050c05 !important;
+      fill: #050c05 !important;
+    }
+  }
+}
+
+.el-menu-item:not(.is-active):hover,
+.el-sub-menu__title:hover {
+  background-color: #0e1b0e !important;
+  color: #00ff41 !important;
+
+  .v-menu__title,
+  span {
+    color: #00ff41 !important;
+  }
+
+  .el-icon,
+  .iconify,
+  svg,
+  svg path,
+  use {
+    color: #00ff41 !important;
+    fill: #00ff41 !important;
+  }
+}
+
+.v-tags-view__item.is-active,
+.v-tags-view .v-tags-view__item.is-active {
+  background-color: #1b3d1b !important;
+  border: 1px solid #00ff41 !important;
+  color: #00ff41 !important;
+
+  .v-tags-view__item--close {
+    color: #00ff41 !important;
+    svg {
+      color: #00ff41 !important;
+    }
+  }
+
+  svg {
+    color: #00ff41 !important;
+  }
+}
+
+.v-setting {
+  background-color: #1b3d1b !important;
+  border: 1px solid #00ff41 !important;
+  color: #00ff41 !important;
+
+  .el-icon,
+  .iconify,
+  svg,
+  svg path {
+    color: #00ff41 !important;
+    fill: #00ff41 !important;
+  }
+}
+
+// Project Settings Drawer Styling
+.el-drawer {
+  background-color: #0a140a !important;
+  border-left: 1px solid #1b3d1b !important;
+  border-right: none !important;
+  outline: none !important;
+  box-shadow: -8px 0 30px rgba(0, 0, 0, 0.85) !important;
+}
+
+.el-drawer__header {
+  margin-bottom: 0 !important;
+  padding: 14px 20px !important;
+  background-color: #0e1b0e !important;
+  border-bottom: 1px solid #1b3d1b !important;
+  color: #00ff41 !important;
+}
+
+.el-drawer__title {
+  color: #00ff41 !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  letter-spacing: 0.08em !important;
+}
+
+.el-drawer__close-btn {
+  color: #8a9e8a !important;
+  font-size: 18px !important;
+  &:hover {
+    color: #00ff41 !important;
+  }
+}
+
+.el-drawer__body {
+  padding: 16px 20px !important;
+  background-color: #0a140a !important;
+  color: #d4d4d4 !important;
+}
+
+// Drawer Dividers
+.el-drawer .el-divider--horizontal {
+  border-top: 1px solid #1b3d1b !important;
+  margin: 18px 0 !important;
+
+  .el-divider__text {
+    background-color: #0a140a !important;
+    color: #00ff41 !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+    padding: 0 10px !important;
+    font-family: 'JetBrains Mono', monospace !important;
+  }
+}
+
+// Drawer switches
+.el-drawer .el-switch {
+  --el-switch-off-color: #132a13 !important;
+  --el-switch-on-color: #00ff41 !important;
+
+  .el-switch__core {
+    background-color: #132a13 !important;
+    border: 1px solid #1b3d1b !important;
+  }
+
+  &.is-checked .el-switch__core {
+    background-color: #00ff41 !important;
+    border-color: #00ff41 !important;
+    .el-switch__action {
+      background-color: #050c05 !important;
+    }
+  }
+}

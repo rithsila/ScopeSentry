@@ -160,8 +160,8 @@ export default defineComponent({
     .@{elNamespace}-sub-menu__title,
     .@{elNamespace}-menu-item {
       &:hover {
-        color: var(--left-menu-text-active-color) !important;
-        background-color: var(--left-menu-bg-color) !important;
+        color: #00ff41 !important;
+        background-color: var(--left-menu-bg-light-color) !important;
       }
     }
 
@@ -169,9 +169,43 @@ export default defineComponent({
     .@{elNamespace}-menu-item.is-active {
       color: var(--left-menu-text-active-color) !important;
       background-color: var(--left-menu-bg-active-color) !important;
+      font-weight: 700 !important;
+
+      .@{prefix-cls}__title,
+      .v-menu__title,
+      span {
+        color: var(--left-menu-text-active-color) !important;
+        font-weight: 700 !important;
+      }
+
+      .el-icon,
+      .iconify,
+      svg,
+      svg path,
+      use {
+        color: var(--left-menu-text-active-color) !important;
+        fill: var(--left-menu-text-active-color) !important;
+        stroke: var(--left-menu-text-active-color) !important;
+      }
 
       &:hover {
-        background-color: var(--left-menu-bg-active-color) !important;
+        background-color: #33ff67 !important;
+        color: var(--left-menu-text-active-color) !important;
+
+        .@{prefix-cls}__title,
+        .v-menu__title,
+        span {
+          color: var(--left-menu-text-active-color) !important;
+        }
+
+        .el-icon,
+        .iconify,
+        svg,
+        svg path,
+        use {
+          color: var(--left-menu-text-active-color) !important;
+          fill: var(--left-menu-text-active-color) !important;
+        }
       }
     }
 
@@ -274,8 +308,8 @@ export default defineComponent({
   .el-sub-menu__title,
   .el-menu-item {
     &:hover {
-      color: var(--left-menu-text-active-color) !important;
-      background-color: var(--left-menu-bg-color) !important;
+      color: #00ff41 !important;
+      background-color: var(--left-menu-bg-light-color) !important;
     }
   }
 
@@ -283,14 +317,43 @@ export default defineComponent({
   .el-menu-item.is-active {
     position: relative;
     background-color: var(--left-menu-bg-active-color) !important;
+    color: var(--left-menu-text-active-color) !important;
+    font-weight: 700 !important;
 
-    &:hover {
-      background-color: var(--left-menu-bg-active-color) !important;
+    .v-menu__title,
+    span {
+      color: var(--left-menu-text-active-color) !important;
+      font-weight: 700 !important;
     }
 
-    // &:after {
-    //   .is-active--after;
-    // }
+    .el-icon,
+    .iconify,
+    svg,
+    svg path,
+    use {
+      color: var(--left-menu-text-active-color) !important;
+      fill: var(--left-menu-text-active-color) !important;
+      stroke: var(--left-menu-text-active-color) !important;
+    }
+
+    &:hover {
+      background-color: #33ff67 !important;
+      color: var(--left-menu-text-active-color) !important;
+
+      .v-menu__title,
+      span {
+        color: var(--left-menu-text-active-color) !important;
+      }
+
+      .el-icon,
+      .iconify,
+      svg,
+      svg path,
+      use {
+        color: var(--left-menu-text-active-color) !important;
+        fill: var(--left-menu-text-active-color) !important;
+      }
+    }
   }
 }
 </style>

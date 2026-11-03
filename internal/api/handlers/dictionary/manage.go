@@ -2,6 +2,7 @@ package dictionary
 
 import (
 	"fmt"
+	"github.com/Autumn-27/ScopeSentry/internal/runtime/testinit"
 	"io"
 	"mime/multipart"
 
@@ -14,6 +15,9 @@ import (
 var manageService dictservice.ManageService
 
 func init() {
+	if testinit.Enabled {
+		return
+	}
 	manageService = dictservice.NewManageService()
 }
 

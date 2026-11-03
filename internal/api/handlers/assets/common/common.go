@@ -12,6 +12,7 @@ import (
 	"github.com/Autumn-27/ScopeSentry/internal/api/response"
 	"github.com/Autumn-27/ScopeSentry/internal/logger"
 	"github.com/Autumn-27/ScopeSentry/internal/models"
+	"github.com/Autumn-27/ScopeSentry/internal/runtime/testinit"
 	"github.com/Autumn-27/ScopeSentry/internal/services/assets/common"
 	"github.com/gin-gonic/gin"
 )
@@ -19,6 +20,9 @@ import (
 var commonService common.Service
 
 func init() {
+	if testinit.Enabled {
+		return
+	}
 	commonService = common.NewService()
 }
 

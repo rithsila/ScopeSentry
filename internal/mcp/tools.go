@@ -30,6 +30,7 @@ import (
 	"github.com/Autumn-27/ScopeSentry/internal/services/task/template"
 	"github.com/gin-gonic/gin"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type deps struct {
@@ -116,6 +117,16 @@ func registerTools(server *mcp.Server) {
 		Name:        "get_task",
 		Description: "Get scan task details by task ID",
 	}, getTask)
+
+	mcp.AddTool(server, &mcp.Tool{
+		Name:        "stop_scan_task",
+		Description: "Request stopping one scan task by ObjectID. Success means service acceptance, not scanner acknowledgement.",
+	}, stopScanTask)
+
+	mcp.AddTool(server, &mcp.Tool{
+		Name:        "resume_scan_task",
+		Description: "Request resuming one stopped scan task by ObjectID. Success means service acceptance, not scanner acknowledgement.",
+	}, resumeScanTask)
 
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "list_scan_templates",
@@ -225,7 +236,7 @@ func getProject(ctx context.Context, _ *mcp.CallToolRequest, input getProjectInp
 type createProjectInput struct {
 	Name           string   `json:"name" jsonschema:"Project name, required"`
 	Tag            string   `json:"tag,omitempty" jsonschema:"Project tag for grouping"`
-	Target         string   `json:"target" jsonschema:"Scan targets, required. Multiline or comma-separated domains/IPs/CIDRs/URLs"`
+	Target         string   `json:"target" jsonschema:"Scan targets, required. Domains/IPs/CIDRs/URLs separated by actual newline characters, not commas or literal backslash-n"`
 	Template       string   `json:"template,omitempty" jsonschema:"Associated scan template ObjectID"`
 	Node           []string `json:"node,omitempty" jsonschema:"List of designated scanning node names"`
 	AllNode        bool     `json:"allNode,omitempty" jsonschema:"Whether to use all available nodes"`
@@ -459,8 +470,8 @@ func buildTemplateFromModules(ctx context.Context, input createScanTemplateInput
 
 type createScanTaskInput struct {
 	Name           string              `json:"name" jsonschema:"Task name, required and unique"`
-	Target         string              `json:"target,omitempty" jsonschema:"Scan targets, required when targetSource is general"`
-	Node           []string            `json:"node" jsonschema:"List of node names to execute scan, required"`
+	Target         string              `json:"target,omitempty" jsonschema:"Scan targets separated by actual newline characters, required when targetSource is general; not commas or literal backslash-n"`
+	Node           []string            `json:"node,omitempty" jsonschema:"Online scanning node names, required unless allNode is true"`
 	Template       string              `json:"template,omitempty" jsonschema:"Scan template ObjectID, required to execute scan"`
 	AllNode        bool                `json:"allNode,omitempty" jsonschema:"Whether to automatically include all online nodes"`
 	Ignore         string              `json:"ignore,omitempty" jsonschema:"Targets to ignore, format same as target"`
@@ -473,7 +484,7 @@ type createScanTaskInput struct {
 	TargetNumber   int                 `json:"targetNumber,omitempty" jsonschema:"Max target count limit in search mode, 0 for unlimited"`
 	TargetIds      []string            `json:"targetIds,omitempty" jsonschema:"Selected asset ObjectIDs in select mode"`
 	BindProject    string              `json:"bindProject,omitempty" jsonschema:"Associated project ObjectID to bind findings to"`
-	ScheduledTasks bool                `json:"scheduledTasks,omitempty" jsonschema:"Whether to create as recurring scheduled task"`
+	ScheduledTasks bool                `json:"scheduledTasks,omitempty" jsonschema:"Unsupported: true is rejected; MCP supports one-shot tasks only"`
 	Hour           int                 `json:"hour,omitempty" jsonschema:"Scheduled interval - hours"`
 	Minute         int                 `json:"minute,omitempty" jsonschema:"Scheduled interval - minutes"`
 	Day            int                 `json:"day,omitempty" jsonschema:"Scheduled interval - days"`
@@ -482,10 +493,54 @@ type createScanTaskInput struct {
 }
 
 func createScanTask(ctx context.Context, _ *mcp.CallToolRequest, input createScanTaskInput) (*mcp.CallToolResult, any, error) {
-	if input.Name == "" || len(input.Node) == 0 {
-		return errorResult("name and node cannot be empty", nil)
+	if input.ScheduledTasks {
+		return errorResult("scheduledTasks=true is unsupported; MCP supports one-shot scans only", nil)
+	}
+	if strings.TrimSpace(input.Name) == "" {
+		return errorResult("name cannot be empty", nil)
+	}
+	if _, err := primitive.ObjectIDFromHex(input.Template); err != nil {
+		return errorResult("template must be a valid scan template ObjectID; use list_scan_templates", nil)
 	}
 	c := ginContext(ctx)
+	tmpl, err := getDeps().templateService.Detail(c, input.Template)
+	if err != nil {
+		return errorResult("failed to get scan template; use list_scan_templates", err)
+	}
+	if tmpl == nil {
+		return errorResult("scan template not found; use list_scan_templates", nil)
+	}
+	onlineNodes, err := getDeps().nodeService.GetNodeData(ctx, true)
+	if err != nil {
+		return errorResult("failed to list online nodes", err)
+	}
+	onlineNames := make(map[string]bool, len(onlineNodes))
+	for _, n := range onlineNodes {
+		if strings.TrimSpace(n.Name) != "" {
+			onlineNames[n.Name] = true
+		}
+	}
+	for _, name := range input.Node {
+		if strings.TrimSpace(name) == "" {
+			return errorResult("node name cannot be empty", nil)
+		}
+		if !onlineNames[name] {
+			return errorResult(fmt.Sprintf("node %q is offline or unknown; use list_nodes with online_only=true", name), nil)
+		}
+	}
+	if input.AllNode {
+		input.Node = make([]string, 0, len(onlineNodes))
+		seen := make(map[string]bool, len(onlineNodes))
+		for _, n := range onlineNodes {
+			if onlineNames[n.Name] && !seen[n.Name] {
+				input.Node = append(input.Node, n.Name)
+				seen[n.Name] = true
+			}
+		}
+	}
+	if len(input.Node) == 0 {
+		return errorResult("at least one online node is required; use list_nodes with online_only=true", nil)
+	}
 	exists, err := getDeps().taskService.CheckTaskNameExists(c, input.Name)
 	if err != nil {
 		return errorResult("failed to check task name", err)
@@ -500,11 +555,12 @@ func createScanTask(ctx context.Context, _ *mcp.CallToolRequest, input createSca
 	}
 
 	taskModel := &models.Task{
-		Name:           input.Name,
-		Target:         input.Target,
-		Node:           input.Node,
-		Template:       input.Template,
-		AllNode:        input.AllNode,
+		Name:     input.Name,
+		Target:   input.Target,
+		Node:     input.Node,
+		Template: input.Template,
+		// Nodes were resolved above. Do not let background dispatch add offline nodes.
+		AllNode:        false,
 		Ignore:         input.Ignore,
 		Duplicates:     input.Duplicates,
 		Project:        input.Project,

@@ -75,15 +75,18 @@ scopesentry doctor
 
 # Manage projects
 scopesentry project list
-scopesentry project create --name "Acme Corp" --target "acme.com,192.168.1.0/24"
+scopesentry project create --name "Acme Corp" --target 'acme.com
+192.168.1.0/24'
 
 # Query assets
-scopesentry asset list --type subdomain --search 'subdomain.domain="acme.com"'
+scopesentry asset list --type subdomain --search 'domain="acme.com"'
 scopesentry asset count --type asset
 
 # Manage scan tasks
 scopesentry task list
 scopesentry task wait <task-id> --timeout 15m --interval 5s
+scopesentry task stop <task-id>
+scopesentry task resume <task-id>
 
 # Direct MCP tool execution
 scopesentry tools list
@@ -95,7 +98,9 @@ Output convention: stdout outputs pure, parseable JSON; stderr receives progress
 
 ---
 
-## 3. Tool Overview (All 17 MCP Tools)
+## 3. Tool Overview
+
+This version registers 19 tools. Always discover the live tool list; older deployments may expose 17.
 
 | Tool | Purpose | Key Parameters |
 | --- | --- | --- |
@@ -105,7 +110,9 @@ Output convention: stdout outputs pure, parseable JSON; stderr receives progress
 | `create_project` | Create project (replaces scope if name matches) | `name`, `target`, `tag`, `template`, `node`, `allNode` |
 | `list_tasks` | Paginated scan task list | `search`, `pageIndex`, `pageSize` |
 | `get_task` | Scan task details & progress | `id` (ObjectID) |
-| `create_scan_task` | Launch or schedule a scan task | `name`, `node`, `target`, `template`, `targetSource` |
+| `create_scan_task` | Launch a one-shot scan after template/node validation | `name`, `node`, `target`, `template`, `targetSource` |
+| `stop_scan_task` | Request a scan to stop/pause | `id` (task ObjectID) |
+| `resume_scan_task` | Request a paused scan to resume | `id` (task ObjectID) |
 | `list_scan_templates` | Paginated scan template list | `query`, `pageIndex`, `pageSize` |
 | `get_scan_template` | Scan template details | `id` (ObjectID) |
 | `create_scan_template` | Assemble scan pipeline from modules/plugins | `name`, `modules`, `parameters`, `vullist`, `template_json` |
@@ -123,8 +130,22 @@ Output convention: stdout outputs pure, parseable JSON; stderr receives progress
 
 Use `search` for full-text and field-level queries (supports `&&`, `||`, `!`, and parentheses):
 
-- Subdomains: `subdomain.domain="example.com"`
-- Web Assets: `asset.host="example.com"`, `asset.title="Login"`, `asset.code==200`
-- URLs: `url.url="login"`, `url.status_code==200`
-- Vulnerabilities: `vulnerability.name="Log4j"`, `vulnerability.level=="critical"`
-- Sensitive Data: `sensitive.body="password"`
+- Subdomains: `domain="example.com"`
+- Web Assets: `domain="example.com"`, `title="Login"`, `statuscode==200`
+- URLs: `url="login"`
+- Vulnerabilities: `vulname="Log4j"`, `level=="critical"`
+- Sensitive Data: `body="password"`
+
+Use only the fields supported by the selected asset type. Do not prefix fields with a collection name. Restrict scan results with `filter: {"task":["scan-name"]}` or project ObjectIDs with `filter: {"project":["project-id"]}`. Do not put project names into the search DSL.
+
+## 5. Scan control and ARTEX
+
+The MCP endpoint ends in `/mcp`; `SCOPESENTRY_URL` is the base URL without that suffix. The CLI appends `/mcp`. Global CLI flags are `--url` and `--api-key` and belong before the command. Keep keys in secret configuration, not chat messages or source files.
+
+Check `list_nodes` with `online_only:true` and inspect an existing template before creating a scan. Pass a template ObjectID and actual online node names. `allNode:true` uses only online nodes. Recurring requests (`scheduledTasks:true`) are rejected through MCP/CLI; use one-shot tasks and a separate scheduler.
+
+A create response confirms a saved task, not worker acknowledgement or successful completion. Poll `get_task` or `task wait`; a wait timeout does not cancel the scan. Stop/resume responses confirm acceptance of a request, not that all scanner processes have stopped or resumed. Check subsequent state and worker evidence.
+
+ARTEX Sync and agent MCP access reuse the saved connection named `ScopeSentry`. Sync imports existing subdomain/service/app assets; it does not launch scans or import vulnerability findings. Chat can control ScopeSentry through the visible skill/MCP tools. Auto is the standalone platform chat agent; Main Agent is the task console. Grant access separately to Worker if it must call the service. Reading remote results does not automatically sync them into ARTEX.
+
+Creating a project with an existing name replaces its entire target scope. Before adding targets, read the complete current target scope successfully, preserve every existing target, merge new entries, and submit the full intended scope using real newlines. Stop if the read fails or completeness cannot be confirmed. The CLI runs on the ARTEX backend host/container, not in the browser. The headless server, MongoDB, Redis, and scanner nodes are still required.

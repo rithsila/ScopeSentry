@@ -3,6 +3,7 @@ package poc
 import (
 	"context"
 	"fmt"
+	"github.com/Autumn-27/ScopeSentry/internal/runtime/testinit"
 	"os"
 	"path/filepath"
 	"strings"
@@ -18,6 +19,9 @@ import (
 var pocService poc.Service
 
 func init() {
+	if testinit.Enabled {
+		return
+	}
 	pocService = poc.NewService()
 }
 

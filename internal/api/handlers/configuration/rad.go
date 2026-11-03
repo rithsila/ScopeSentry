@@ -9,6 +9,7 @@ package configuration
 
 import (
 	"github.com/Autumn-27/ScopeSentry/internal/api/response"
+	"github.com/Autumn-27/ScopeSentry/internal/runtime/testinit"
 	"github.com/Autumn-27/ScopeSentry/internal/services/configuration"
 	"github.com/gin-gonic/gin"
 )
@@ -52,5 +53,8 @@ func SaveRadData(c *gin.Context) {
 }
 
 func init() {
+	if testinit.Enabled {
+		return
+	}
 	radConfigService = configuration.NewService()
 }

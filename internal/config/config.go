@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Autumn-27/ScopeSentry/internal/runtime/testinit"
 	"github.com/Autumn-27/ScopeSentry/internal/utils"
 
 	"github.com/Autumn-27/ScopeSentry/internal/utils/random"
@@ -77,6 +78,10 @@ var GlobalConfig Config
 
 // init 加载配置
 func init() {
+	if testinit.Enabled {
+		GlobalConfig = Config{System: SystemConfig{Timezone: "UTC"}, Log: LogConfig{Level: "info"}}
+		return
+	}
 	// 设置默认值
 	setDefaults()
 

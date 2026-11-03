@@ -55,6 +55,7 @@ func NewService() Service {
 		assetService:      asset.NewService(),
 		rootDomainService: root_domain.NewService(),
 		subdomainService:  subdomain.NewService(),
+		urlService:        url.NewService(),
 		nodeService:       node.NewService(),
 		dictionaryService: dictionary.NewManageService(),
 		portsService:      dictionary.NewPortService(),
@@ -209,13 +210,17 @@ func (s *service) CreateTaskScan(ctx context.Context, task models.Task, id strin
 	if err != nil {
 		return 0, err
 	}
+	var dispatchErrors []error
 	for _, n := range task.Node {
 		template.Target = ""
 		err := s.taskRepo.RPushNodeTask(ctx, n, template)
 		if err != nil {
 			logger.Error(fmt.Sprintf("CreateTaskScan task:%v error:%v", n, err))
-			continue
+			dispatchErrors = append(dispatchErrors, fmt.Errorf("failed to queue task for node %s: %w", n, err))
 		}
+	}
+	if err := errors.Join(dispatchErrors...); err != nil {
+		return 0, err
 	}
 	logger.Info(fmt.Sprintf("CreateTaskScan task:%v success", task.ID.Hex()))
 	return 0, nil
@@ -225,6 +230,9 @@ func (s *service) GetScanTemplate(ctx context.Context, task *models.Task) (*mode
 	scanTemplate, err := s.taskRepo.FindTemplateByID(ctx, task.Template)
 	if err != nil {
 		return &models.ScanTemplate{}, err
+	}
+	if scanTemplate == nil {
+		return nil, fmt.Errorf("scan template not found: %s", task.Template)
 	}
 	if len(scanTemplate.VulList) != 0 {
 		if helper.StringInSlice("ed93b8af6b72fe54a60efdb932cf6fbc", scanTemplate.VulnerabilityScan) {

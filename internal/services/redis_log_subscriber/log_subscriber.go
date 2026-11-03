@@ -21,6 +21,7 @@ import (
 	redisdb "github.com/Autumn-27/ScopeSentry/internal/database/redis"
 	"github.com/Autumn-27/ScopeSentry/internal/logger"
 	"github.com/Autumn-27/ScopeSentry/internal/models"
+	"github.com/Autumn-27/ScopeSentry/internal/runtime/testinit"
 	"github.com/Autumn-27/ScopeSentry/internal/services/task/common"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -42,6 +43,9 @@ var projectService project.Service
 func init() {
 	LOG_INFO = make(map[string][]string)
 	GET_LOG_NAME = make([]string, 0)
+	if testinit.Enabled {
+		return
+	}
 	taskService = task.NewService()
 	projectService = project.NewService()
 }

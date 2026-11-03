@@ -3,6 +3,7 @@ package subdomain
 import (
 	"github.com/Autumn-27/ScopeSentry/internal/api/response"
 	"github.com/Autumn-27/ScopeSentry/internal/models"
+	"github.com/Autumn-27/ScopeSentry/internal/runtime/testinit"
 	"github.com/Autumn-27/ScopeSentry/internal/services/assets/subdomain"
 	"github.com/gin-gonic/gin"
 )
@@ -10,6 +11,9 @@ import (
 var subdomainService subdomain.Service
 
 func init() {
+	if testinit.Enabled {
+		return
+	}
 	subdomainService = subdomain.NewService()
 }
 

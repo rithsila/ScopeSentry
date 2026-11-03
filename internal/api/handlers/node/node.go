@@ -9,6 +9,7 @@ package node
 import (
 	"context"
 	"fmt"
+	"github.com/Autumn-27/ScopeSentry/internal/runtime/testinit"
 	"strings"
 
 	"github.com/Autumn-27/ScopeSentry/internal/api/response"
@@ -218,5 +219,8 @@ func RestartNode(c *gin.Context) {
 }
 
 func init() {
+	if testinit.Enabled {
+		return
+	}
 	nodeService = node.NewService()
 }

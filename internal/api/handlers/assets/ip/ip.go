@@ -10,6 +10,7 @@ package ip
 import (
 	"github.com/Autumn-27/ScopeSentry/internal/api/response"
 	"github.com/Autumn-27/ScopeSentry/internal/models"
+	"github.com/Autumn-27/ScopeSentry/internal/runtime/testinit"
 	ipservice "github.com/Autumn-27/ScopeSentry/internal/services/assets/ip"
 	"github.com/gin-gonic/gin"
 )
@@ -17,6 +18,9 @@ import (
 var ipService ipservice.Service
 
 func init() {
+	if testinit.Enabled {
+		return
+	}
 	ipService = ipservice.NewService()
 }
 

@@ -8,6 +8,7 @@ import (
 	"github.com/Autumn-27/ScopeSentry/internal/logger"
 
 	"github.com/Autumn-27/ScopeSentry/internal/config"
+	"github.com/Autumn-27/ScopeSentry/internal/runtime/testinit"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -25,6 +26,9 @@ func isSkipRedisCommand() bool {
 }
 
 func init() {
+	if testinit.Enabled {
+		return
+	}
 	// 创建 Redis 客户端（本地结构体初始化）
 	client := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%s", config.GlobalConfig.Redis.IP, config.GlobalConfig.Redis.Port),

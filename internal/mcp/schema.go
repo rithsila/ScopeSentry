@@ -81,10 +81,10 @@ PortScan, PortFingerprint, AssetMapping, AssetHandle, URLScan, WebCrawler,
 URLSecurity, DirScan, VulnerabilityScan, PassiveScan`
 
 // createScanTaskToolDesc explains task creation for MCP clients
-const createScanTaskToolDesc = `Create a scan task. Requires name and node; template is a scan template ObjectID.
+const createScanTaskToolDesc = `Create a one-shot scan task. Requires a unique name, an existing scan template ObjectID, and online node names (or allNode=true).
 
 targetSource determines target extraction:
-- general: Direct targets in target field (multiline or comma-separated domains/IPs/URLs)
+- general: Direct domains/IPs/URLs in target, separated by actual newline characters (not commas or literal backslash-n)
 - project: Read targets from project ObjectIDs in project field
 - asset / RootDomain / subdomain / UrlScan: Search targets from the asset database using search/filter
 - *Source (e.g. subdomainSource): Create from asset pages using targetTp='search' or 'select'
@@ -93,7 +93,8 @@ Other parameters:
 - allNode: Run on all online nodes
 - ignore / duplicates: Target exclusions and deduplication policy
 - bindProject: Project ObjectID to associate findings with
-- scheduledTasks: Enable recurring scan with cycleType/hour/minute/day/week`
+- scheduledTasks: true is rejected before persistence; recurring scans are not supported through MCP
+- cycleType/hour/minute/day/week do not enable scheduling for one-shot tasks`
 
 // countAssetsToolDesc explains asset counting for MCP clients
 const countAssetsToolDesc = `Count total assets matching search and filter criteria without pagination.

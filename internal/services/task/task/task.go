@@ -246,11 +246,17 @@ func (s *service) StopTasks(ctx *gin.Context, ids []string) error {
 		return nil
 	}
 	for _, id := range ids {
+		oid, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			return fmt.Errorf("invalid task id %q: %w", id, err)
+		}
 		// 广播停止任务
-		_ = s.nodeService.RefreshConfig(ctx, models.Message{Name: "all", Type: "stop_task", Content: id})
+		if err := s.nodeService.RefreshConfig(ctx, models.Message{Name: "all", Type: "stop_task", Content: oid.Hex()}); err != nil {
+			return fmt.Errorf("failed to send stop request for task %s: %w", id, err)
+		}
 		// 状态置为2
-		if oid, err := primitive.ObjectIDFromHex(id); err == nil {
-			_ = s.taskRepo.UpdateOne(ctx, bson.M{"_id": oid}, bson.M{"$set": bson.M{"status": 2}})
+		if err := s.taskRepo.UpdateOne(ctx, bson.M{"_id": oid}, bson.M{"$set": bson.M{"status": 2}}); err != nil {
+			return fmt.Errorf("stop request sent but failed to update task %s status; inspect get_task before retrying: %w", id, err)
 		}
 	}
 	return nil
@@ -264,21 +270,29 @@ func (s *service) StartTasks(ctx *gin.Context, ids []string) error {
 	for _, id := range ids {
 		oid, err := primitive.ObjectIDFromHex(id)
 		if err != nil {
-			continue
+			return fmt.Errorf("invalid task id %q: %w", id, err)
 		}
 		t, err := s.taskRepo.FindByID(ctx, oid)
-		if err != nil || t == nil {
-			continue
+		if err != nil {
+			return fmt.Errorf("failed to find task %s: %w", id, err)
 		}
-		if t.Progress == 100 {
+		if t == nil {
+			return fmt.Errorf("task not found: %s", id)
+		}
+		if t.Status == 3 || t.Progress >= 100 {
 			// 已完成，不再启动
-			continue
+			return fmt.Errorf("task %s is completed and cannot be resumed", id)
+		}
+		if t.Status != 2 {
+			return fmt.Errorf("task %s must be paused before resuming", id)
 		}
 		t.IsStart = true
-		if _, err := s.commonService.CreateTaskScan(ctx, *t, id, true); err != nil {
-			continue
+		if _, err := s.commonService.CreateTaskScan(ctx, *t, oid.Hex(), true); err != nil {
+			return fmt.Errorf("failed to resume task %s; dispatch may be partial, inspect task and nodes before retrying: %w", id, err)
 		}
-		_ = s.taskRepo.UpdateOne(ctx, bson.M{"_id": oid}, bson.M{"$set": bson.M{"status": 1}})
+		if err := s.taskRepo.UpdateOne(ctx, bson.M{"_id": oid}, bson.M{"$set": bson.M{"status": 1}}); err != nil {
+			return fmt.Errorf("resume request sent but failed to update task %s status; inspect get_task before retrying: %w", id, err)
+		}
 	}
 	return nil
 }

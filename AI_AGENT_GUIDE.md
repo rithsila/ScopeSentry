@@ -40,7 +40,7 @@ For agents with shell/command execution access:
 
 ```bash
 export SCOPESENTRY_URL="http://127.0.0.1:8082"
-export SCOPESENTRY_API_KEY="ssk_xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+export SCOPESENTRY_API_KEY="<your-api-key>"
 
 # Verify health
 scopesentry doctor
@@ -76,16 +76,19 @@ All `scopesentry` commands write machine-readable JSON to `stdout` and logs/diag
 scopesentry project list
 scopesentry project list --by-tag
 scopesentry project get <project-id>
-scopesentry project create --name "Company A" --target "example.com\n1.2.3.0/24"
+scopesentry project create --name "Company A" --target 'example.com
+1.2.3.0/24'
 
 # Tasks
 scopesentry task list --search "Recon"
 scopesentry task get <task-id>
 scopesentry task create --name "Initial Scan" --node "node-1" --target "example.com" --template "<template-id>"
 scopesentry task wait <task-id> --timeout 15m --interval 5s
+scopesentry task stop <task-id>
+scopesentry task resume <task-id>
 
 # Assets
-scopesentry asset list --type subdomain --search 'subdomain.domain="example.com"'
+scopesentry asset list --type subdomain --search 'domain="example.com"'
 scopesentry asset count --type asset
 scopesentry asset get --type vulnerability <vuln-hash>
 scopesentry asset add-tag --type asset --id <asset-id> --tag "Production"
@@ -98,12 +101,14 @@ scopesentry plugin list --module SubdomainScan
 # Direct MCP tool execution
 scopesentry tools list
 scopesentry tools describe create_scan_task
-scopesentry tools call create_scan_task --input '{"name":"api-scan","node":["node-1"]}'
+scopesentry tools call list_nodes --input '{"online_only":true}'
 ```
 
 ---
 
-## 4. MCP Tools Catalog (All 17 Tools)
+## 4. MCP Tools Catalog
+
+This version exposes 19 tools. Discover the running server's tools instead of requiring an exact count.
 
 | Tool Name | What It Does | Key Arguments |
 |---|---|---|
@@ -113,7 +118,9 @@ scopesentry tools call create_scan_task --input '{"name":"api-scan","node":["nod
 | `create_project` | Create project or replace scope on duplicate name | `name`, `target`, `tag`, `template`, `node` |
 | `list_tasks` | List scan tasks | `search`, `pageIndex`, `pageSize` |
 | `get_task` | Get task status, progress, and node execution stats | `id` (Task ObjectID) |
-| `create_scan_task` | Launch or schedule a scan task | `name`, `node`, `template`, `targetSource` |
+| `create_scan_task` | Launch a validated one-shot scan task | `name`, `node`, `template`, `targetSource` |
+| `stop_scan_task` | Request stop/pause for one scan | `id` (Task ObjectID) |
+| `resume_scan_task` | Request resume for one paused scan | `id` (Task ObjectID) |
 | `list_scan_templates` | List scan templates | `query`, `pageIndex`, `pageSize` |
 | `get_scan_template` | Get scan template details | `id` (Template ObjectID) |
 | `create_scan_template`| Build custom scan pipeline from plugin hashes | `name`, `modules`, `parameters`, `vullist` |
@@ -150,10 +157,10 @@ scopesentry tools call create_scan_task --input '{"name":"api-scan","node":["nod
 
 ### Examples:
 ```text
-asset.host="api.example.com" && asset.code==200
-subdomain.domain="example.com"
-vulnerability.level=="critical" || vulnerability.level=="high"
-url.url="login" && url.status_code==200
+domain="api.example.com" && statuscode==200
+domain="example.com"
+level=="critical" || level=="high"
+url="login"
 ```
 
 ---
@@ -161,12 +168,22 @@ url.url="login" && url.status_code==200
 ## 6. Important Agent Rules & Gotchas
 
 1. **Project Scope Replacement on Duplicate Name**:
-   When `create_project` is called with an existing project name and a valid `target`, ScopeSentry does not return an error; it replaces the target scope of the existing project and preserves the project ObjectID. The response contains `"replaced": true`.
+   When `create_project` is called with an existing project name and a valid `target`, ScopeSentry does not return an error; it replaces the target scope of the existing project and preserves the project ObjectID. The response contains `"replaced": true`. Before adding targets, successfully read the complete current target scope, preserve every existing target, and merge new entries. Stop if the read fails or its completeness cannot be confirmed.
 2. **Project IDs in Filters**:
    When filtering assets or tasks by project, always use the MongoDB ObjectID (24 hex characters), not the project name.
 3. **Task Completion Detection**:
    Tasks finish when `status == 3` or `progress >= 100`. Use `scopesentry task wait <task-id>` for automatic polling with timeout safeguards.
 4. **Always Check Nodes First**:
-   Always verify active nodes with `list_nodes({ online_only: true })` before creating a task. Tasks assigned to offline nodes will stall in `Waiting` state.
+   Always verify active nodes with `list_nodes({ online_only: true })` and inspect the template before creating a task. Scan creation rejects offline/unknown nodes and missing templates. `allNode:true` resolves online nodes only.
 5. **Count Before Paging**:
    Call `count_assets` before paginating through large asset lists with `list_assets`.
+
+## 7. ARTEX integration and lifecycle limits
+
+Use one saved ARTEX MCP entry named `ScopeSentry`; Asset Sync uses the same endpoint and headers. The ScopeSentry skill should be visible to Auto for standalone Chat, or Main Agent for task-console chat. Skill-linked MCP tools unlock when the agent loads the skill. Worker permissions are independent. The opt-in ARTEX host tool `sync_scopesentry_assets` imports remote assets through the same operation as the Sync page; bind it separately to the intended agent.
+
+For terminal workflows, install a matching `scopesentry` binary on the ARTEX backend host or inside its container. Configure `SCOPESENTRY_URL` without `/mcp` and inject `SCOPESENTRY_API_KEY` separately; ARTEX's stored MCP headers are not shell environment variables. `doctor` may exit 0 with `status:"degraded"`; inspect the JSON report, readiness, tool listing, and online scanner nodes.
+
+Create tasks with an existing template ObjectID and online node names. Success returns a saved task ID before worker dispatch completes. Poll status and inspect results; `task wait` timeout does not stop a scan. Stop/resume acknowledges the control request, not scanner process acknowledgement. MCP/CLI recurring requests are explicitly unsupported; schedule repeated one-shot calls outside this interface.
+
+Filter results by task **name**, for example `--filter '{"task":["artex-recon-001"]}'`; project filters use ObjectIDs. Use unprefixed DSL field names supported by the selected collection. Multiple targets require actual newlines. Sync imports assets into ARTEX separately and currently excludes vulnerability findings.

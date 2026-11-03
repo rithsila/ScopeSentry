@@ -5,7 +5,7 @@ ScopeSentry is a headless, distributed asset mapping and vulnerability scanning 
 ## Quick Commands
 
 - **Build Server**: `go build -o ScopeSentry ./cmd/main`
-- **Build CLI**: `go build -o scopesentry ./cmd/scopesentry`
+- **Build CLI**: `go build -o bin/scopesentry ./cmd/scopesentry` (separate directory avoids a server/client filename collision on case-insensitive macOS filesystems).
 - **Run Server**: `./ScopeSentry` (default port: `8082`, requires MongoDB and Redis).
 - **Headless Admin Credentials**:
   - Create API Key: `./ScopeSentry apikey create --name <key-name>`
@@ -16,13 +16,15 @@ ScopeSentry is a headless, distributed asset mapping and vulnerability scanning 
   - `scopesentry doctor` (health check for server, /live, /ready, /mcp)
   - `scopesentry project list` / `scopesentry project create --name <n> --target <t>`
   - `scopesentry task list` / `scopesentry task create ...` / `scopesentry task wait <id>`
+  - `scopesentry task stop <id>` / `scopesentry task resume <id>` (request acceptance, not scanner acknowledgement).
   - `scopesentry asset list --type <type> --search <dsl>`
   - `scopesentry tools list` / `scopesentry tools describe <tool>` / `scopesentry tools call <tool>`
 - **Run Tests**:
-  - Full CLI test suite: `go test -v ./cmd/scopesentry/...`
-  - Server & Admin test suite: `go test -v ./cmd/main`
-  - In-memory MCP tools test suite: `go test -v ./internal/mcp`
-  - Targeted package tests: `go test ./internal/services/project ./internal/api/handlers/sensitiveRule`
+  - Isolated unit suite on macOS: `bash scripts/test-isolated.sh` (requires `scopesentry_unit` bootstrap; never deploy this build tag).
+  - CLI packages: `bash scripts/test-isolated.sh ./cmd/scopesentry/...`
+  - Server/Admin/MCP: `bash scripts/test-isolated.sh ./cmd/main ./internal/mcp`
+  - Race checks: `RACE=1 bash scripts/test-isolated.sh`
+  - Do not run untagged backend tests: transitive package `init()` can read runtime configuration, connect to databases, and create config/key files before test fakes. On other platforms use an explicitly isolated environment; the macOS runner refuses an unsafe fallback.
 
 ## Architecture & Entry Points
 
@@ -35,7 +37,7 @@ ScopeSentry is a headless, distributed asset mapping and vulnerability scanning 
   - Zero backend dependencies: does NOT import mongo, redis, gin, workers, or scheduler.
   - Strict output convention: stdout outputs pure, machine-readable JSON; stderr outputs progress, diagnostics, and errors.
 - **MCP Server**: `internal/mcp/`
-  - Exposes all 17 security scanning tools with English descriptions and JSON schemas.
+  - Exposes 19 tools with English descriptions and JSON schemas, including scan stop/resume. Discover the live list because older deployments expose 17.
   - See `SKILL.md` for full tool documentation and search DSL reference.
 - **Plugin Engine**: `internal/plugins/` & `internal/symbols/`
   - Runtime Go plugin evaluation using Yaegi (`github.com/traefik/yaegi`).

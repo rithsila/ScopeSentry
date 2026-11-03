@@ -5,6 +5,7 @@ import (
 	"github.com/Autumn-27/ScopeSentry/internal/api/response"
 	"github.com/Autumn-27/ScopeSentry/internal/logger"
 	"github.com/Autumn-27/ScopeSentry/internal/models"
+	"github.com/Autumn-27/ScopeSentry/internal/runtime/testinit"
 	"github.com/Autumn-27/ScopeSentry/internal/services/task/template"
 	"github.com/gin-gonic/gin"
 )
@@ -12,6 +13,9 @@ import (
 var templateService template.Service
 
 func init() {
+	if testinit.Enabled {
+		return
+	}
 	templateService = template.NewService()
 }
 

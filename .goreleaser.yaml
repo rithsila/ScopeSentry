@@ -16,11 +16,25 @@ builds:
       - amd64
     env:
       - GOAMD64=v1
-    main: ./cmd/main/main.go
+    main: ./cmd/main
     binary: ScopeSentry
     ldflags:
       - -s -w
       - -X github.com/Autumn-27/ScopeSentry/internal/constants.Version={{.Version}}
+
+  - id: scopesentry-cli
+    goos:
+      - windows
+      - linux
+      - darwin
+    goarch:
+      - amd64
+    env:
+      - GOAMD64=v1
+    main: ./cmd/scopesentry
+    binary: scopesentry
+    ldflags:
+      - -s -w
 
 archives:
   - id: default
@@ -28,6 +42,13 @@ archives:
       - ScopeSentry
     format: zip
     name_template: "ScopeSentry_{{ .Os }}_{{ .Arch }}"
+
+  # Separate archives avoid case-insensitive ScopeSentry/scopesentry collisions.
+  - id: cli
+    builds:
+      - scopesentry-cli
+    format: zip
+    name_template: "scopesentry-cli_{{ .Os }}_{{ .Arch }}"
 
 changelog:
   disable: true

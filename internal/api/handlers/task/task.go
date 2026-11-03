@@ -9,6 +9,7 @@ package task
 import (
 	"context"
 	"fmt"
+	"github.com/Autumn-27/ScopeSentry/internal/runtime/testinit"
 
 	"github.com/Autumn-27/ScopeSentry/internal/api/response"
 	"github.com/Autumn-27/ScopeSentry/internal/logger"
@@ -369,6 +370,9 @@ func GetAllTaskNames(c *gin.Context) {
 }
 
 func init() {
+	if testinit.Enabled {
+		return
+	}
 	taskService = task.NewService()
 	commonService = common.NewService()
 }

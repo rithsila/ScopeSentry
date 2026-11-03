@@ -7,8 +7,8 @@ PLUGINKEY
 dist/
 uploads/
 .uploads/
-ScopeSentry
-scopesentry
+/ScopeSentry
+/scopesentry
 bin/
 ScopeSentry-linux
 .cursor/mcp.json

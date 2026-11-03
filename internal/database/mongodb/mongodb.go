@@ -13,6 +13,7 @@ import (
 	"github.com/Autumn-27/ScopeSentry/internal/logger"
 
 	"github.com/Autumn-27/ScopeSentry/internal/config"
+	"github.com/Autumn-27/ScopeSentry/internal/runtime/testinit"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -33,6 +34,9 @@ func isOfflineSubcommand() bool {
 }
 
 func init() {
+	if testinit.Enabled {
+		return
+	}
 	username := url.QueryEscape(config.GlobalConfig.MongoDB.Username)
 	password := url.QueryEscape(config.GlobalConfig.MongoDB.Password)
 

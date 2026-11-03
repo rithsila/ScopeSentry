@@ -6,6 +6,7 @@ import (
 	"github.com/Autumn-27/ScopeSentry/internal/api/response"
 	"github.com/Autumn-27/ScopeSentry/internal/logger"
 	"github.com/Autumn-27/ScopeSentry/internal/models"
+	"github.com/Autumn-27/ScopeSentry/internal/runtime/testinit"
 	"github.com/Autumn-27/ScopeSentry/internal/services/assets/sensitive"
 	"github.com/gin-gonic/gin"
 )
@@ -13,6 +14,9 @@ import (
 var sensitiveService sensitive.Service
 
 func init() {
+	if testinit.Enabled {
+		return
+	}
 	sensitiveService = sensitive.NewService()
 }
 

@@ -2,6 +2,7 @@ package user
 
 import (
 	"github.com/Autumn-27/ScopeSentry/internal/api/response"
+	"github.com/Autumn-27/ScopeSentry/internal/runtime/testinit"
 	"github.com/Autumn-27/ScopeSentry/internal/services/user"
 	"github.com/gin-gonic/gin"
 )
@@ -87,5 +88,8 @@ func ChangePassword(c *gin.Context) {
 }
 
 func init() {
+	if testinit.Enabled {
+		return
+	}
 	userService = user.NewService()
 }

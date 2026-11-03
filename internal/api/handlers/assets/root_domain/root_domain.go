@@ -5,6 +5,7 @@ import (
 	"github.com/Autumn-27/ScopeSentry/internal/api/response"
 	"github.com/Autumn-27/ScopeSentry/internal/logger"
 	"github.com/Autumn-27/ScopeSentry/internal/models"
+	"github.com/Autumn-27/ScopeSentry/internal/runtime/testinit"
 	"github.com/Autumn-27/ScopeSentry/internal/services/assets/root_domain"
 	"github.com/gin-gonic/gin"
 )
@@ -12,6 +13,9 @@ import (
 var rootDomainService root_domain.Service
 
 func init() {
+	if testinit.Enabled {
+		return
+	}
 	rootDomainService = root_domain.NewService()
 }
 

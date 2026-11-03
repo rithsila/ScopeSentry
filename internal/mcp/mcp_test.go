@@ -42,6 +42,8 @@ func TestNewServerRegistersAllTools(t *testing.T) {
 		"create_project",
 		"list_tasks",
 		"get_task",
+		"stop_scan_task",
+		"resume_scan_task",
 		"list_scan_templates",
 		"get_scan_template",
 		"list_plugin_modules",

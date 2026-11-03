@@ -3,6 +3,8 @@
 **Date**: November 3, 2026  
 **Status**: Completed & Verified  
 
+Historical migration report: the initial headless migration exposed 17 MCP tools. The later ARTEX integration adds stop/resume for 19 tools and explicitly rejects recurring MCP requests. Current behavior is documented in `AI_AGENT_GUIDE.md`; the original verification numbers below are retained as historical evidence.
+
 ---
 
 ## 1. Executive Summary

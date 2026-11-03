@@ -3,6 +3,7 @@ package page_monitoring
 import (
 	"errors"
 	"fmt"
+	"github.com/Autumn-27/ScopeSentry/internal/runtime/testinit"
 
 	"github.com/Autumn-27/ScopeSentry/internal/logger"
 	"github.com/Autumn-27/ScopeSentry/internal/services/assets/page_monitoring"
@@ -15,6 +16,9 @@ import (
 var pageMonitoringService page_monitoring.Service
 
 func init() {
+	if testinit.Enabled {
+		return
+	}
 	pageMonitoringService = page_monitoring.NewService()
 }
 

@@ -10,6 +10,7 @@ package dirscan
 import (
 	"github.com/Autumn-27/ScopeSentry/internal/api/response"
 	"github.com/Autumn-27/ScopeSentry/internal/models"
+	"github.com/Autumn-27/ScopeSentry/internal/runtime/testinit"
 	"github.com/Autumn-27/ScopeSentry/internal/services/assets/dirscan"
 	"github.com/gin-gonic/gin"
 )
@@ -17,6 +18,9 @@ import (
 var dirscanService dirscan.Service
 
 func init() {
+	if testinit.Enabled {
+		return
+	}
 	dirscanService = dirscan.NewService()
 }
 

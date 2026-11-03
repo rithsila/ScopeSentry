@@ -14,6 +14,7 @@ import (
 	"github.com/Autumn-27/ScopeSentry/internal/config"
 	"github.com/Autumn-27/ScopeSentry/internal/logger"
 	"github.com/Autumn-27/ScopeSentry/internal/models"
+	"github.com/Autumn-27/ScopeSentry/internal/runtime/testinit"
 	"github.com/Autumn-27/ScopeSentry/internal/services/export"
 	"github.com/Autumn-27/ScopeSentry/internal/utils/helper"
 	"github.com/gin-gonic/gin"
@@ -26,6 +27,9 @@ import (
 var exportService export.Service
 
 func init() {
+	if testinit.Enabled {
+		return
+	}
 	exportService = export.NewService()
 }
 

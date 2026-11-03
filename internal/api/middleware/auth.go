@@ -14,10 +14,27 @@ import (
 // AuthMiddleware JWT认证中间件
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// 优先支持 API Key 认证 (X-API-Key 或 Bearer ssk_...)
+		if rawKey := extractAPIKey(c); rawKey != "" {
+			record, err := getApiKeyService().Validate(c.Request.Context(), rawKey)
+			if err == nil && record != nil {
+				c.Set("userID", record.ID.Hex())
+				c.Set("username", record.Name)
+				c.Set("role", "admin")
+				c.Set("apiKeyID", record.ID.Hex())
+				c.Set("apiKeyName", record.Name)
+				c.Next()
+				return
+			}
+			response.Unauthorized(c, "Invalid API key", nil)
+			c.Abort()
+			return
+		}
+
 		// 获取Authorization header
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			response.Unauthorized(c, "Authorization header is required", nil)
+			response.Unauthorized(c, "Authorization header or API key is required", nil)
 			c.Abort()
 			return
 		}

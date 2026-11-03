@@ -3,19 +3,15 @@ package mongodb
 import (
 	"context"
 	"fmt"
-	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/Autumn-27/ScopeSentry/internal/logger"
-	"github.com/Autumn-27/ScopeSentry/internal/utils/helper"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/Autumn-27/ScopeSentry/internal/constants"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/Autumn-27/ScopeSentry/internal/config"
-	"github.com/Autumn-27/ScopeSentry/internal/utils/random"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -56,43 +52,8 @@ func CreateDatabase() error {
 
 	// 如果数据库或基础配置不存在，创建数据库与初始配置
 	if !isInitialized {
-		totalSteps := 13
+		totalSteps := 12
 		currentStep := 0
-
-		// 创建用户集合
-		collection := db.Collection("user")
-		password, err := random.GeneratePassword(16)
-		if err != nil {
-			password = random.GenerateRandomString(16)
-		}
-
-		// 打印重要信息
-		separator := strings.Repeat("=", 50)
-		fmt.Printf("%s\n", separator)
-		fmt.Println("✨✨✨ IMPORTANT NOTICE: Please review the User/Password below ✨✨✨")
-		fmt.Println(separator)
-		fmt.Printf("🔑 User/Password: ScopeSentry/%s\n", password)
-		fmt.Println(separator)
-		fmt.Println("✅ Ensure the User/Password is correctly copied!")
-		fmt.Println("✅ The initialization password is stored in the file PASSWORD")
-
-		// 保存密码到文件
-		if err := os.WriteFile(filepath.Join(config.GlobalConfig.System.ExeDir, "PASSWORD"), []byte(password), 0644); err != nil {
-			return fmt.Errorf("failed to write password file: %v", err)
-		}
-
-		// 加密密码
-		hashedPassword := helper.Sha256Hex(password)
-		// 创建用户
-		_, err = collection.InsertOne(context.Background(), bson.M{
-			"username": "ScopeSentry",
-			"password": hashedPassword,
-		})
-		if err != nil {
-			return fmt.Errorf("failed to create user: %v", err)
-		}
-		currentStep++
-		printProgressBar(currentStep, totalSteps, "Creating user")
 
 		// 创建配置集合
 		configCollection := db.Collection("config")

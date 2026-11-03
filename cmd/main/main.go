@@ -69,7 +69,7 @@ func buildRouter() *gin.Engine {
 		ctx, cancel := context.WithTimeout(c.Request.Context(), 3*time.Second)
 		defer cancel()
 
-		if !mongodb.IsConnected || mongodb.Client == nil {
+		if !mongodb.EnsureConnected() || mongodb.Client == nil {
 			c.JSON(http.StatusServiceUnavailable, gin.H{"status": "unavailable", "error": "mongodb not connected"})
 			return
 		}
@@ -119,6 +119,11 @@ func main() {
 	}
 	logger.Info("Starting ScopeSentry", zap.String("version", constants.Version))
 	PrintPlugin()
+	if mongodb.EnsureConnected() {
+		if err := mongodb.CreateDatabase(); err != nil {
+			logger.Error("Database initialization error", zap.Error(err))
+		}
+	}
 	err = update.Update()
 	if err != nil {
 		logger.Error("Update failed", zap.Error(err))

@@ -45,8 +45,17 @@ func CreateDatabase() error {
 
 	db := client.Database(config.GlobalConfig.MongoDB.Database)
 
-	// 如果数据库不存在，创建数据库
-	if !contains(databases, config.GlobalConfig.MongoDB.Database) {
+	// 检查数据库是否已完整初始化（检查 config 中是否存在 timezone）
+	var isInitialized bool
+	if contains(databases, config.GlobalConfig.MongoDB.Database) {
+		var tzDoc bson.M
+		if err := db.Collection("config").FindOne(context.Background(), bson.M{"name": "timezone"}).Decode(&tzDoc); err == nil {
+			isInitialized = true
+		}
+	}
+
+	// 如果数据库或基础配置不存在，创建数据库与初始配置
+	if !isInitialized {
 		totalSteps := 13
 		currentStep := 0
 
@@ -289,7 +298,22 @@ func CreateDatabase() error {
 		var result bson.M
 		err := configCollection.FindOne(context.Background(), bson.M{"name": "timezone"}).Decode(&result)
 		if err != nil {
-			return fmt.Errorf("failed to get timezone config: %v", err)
+			if err == mongo.ErrNoDocuments {
+				tz := config.GlobalConfig.System.Timezone
+				if tz == "" {
+					tz = "Asia/Shanghai"
+				}
+				_, err = configCollection.InsertOne(context.Background(), bson.M{
+					"name":  "timezone",
+					"value": tz,
+					"type":  "system",
+				})
+				if err != nil {
+					return fmt.Errorf("failed to insert default timezone: %v", err)
+				}
+			} else {
+				return fmt.Errorf("failed to get timezone config: %v", err)
+			}
 		}
 
 		// 检查定时任务

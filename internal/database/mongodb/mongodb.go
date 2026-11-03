@@ -87,6 +87,22 @@ func init() {
 	return
 }
 
+func EnsureConnected() bool {
+	if IsConnected && Client != nil {
+		return true
+	}
+	if Client == nil {
+		return false
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	if err := Client.Ping(ctx, nil); err == nil {
+		IsConnected = true
+		return true
+	}
+	return false
+}
+
 func Close() error {
 	if Client != nil {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
